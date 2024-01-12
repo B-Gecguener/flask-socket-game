@@ -1,7 +1,5 @@
 from flask import request
 from flask_socketio import emit, join_room
-import random
-import string
 
 from .extensions import io
 
@@ -9,12 +7,22 @@ from .extensions import io
 #The following lines are the events that will be catched and answerd by the server
 
 @io.on("connect_me")
+# ^ request for connection to given room by the client
 def connect_client_to_room(room):
+  print("connect "+request.sid+" to "+room)
   join_room(room, sid = request.sid)
-  # ^ move client into created room
+  # ^ move client into room
   io.emit("connected_to_room", to=request.sid)
+  # ^ inform client about connection
 
 @io.on("ping_to_server")
+# ^ ping by client to clients room
 def ping(room):
   io.emit("ping_to_client", to=room)
+  # ^ send ping to room of client
   print("ping to "+room)
+
+@io.on("chat_message")
+def handle_chat_message(data):
+  io.emit("chat_message", data["message"], to=data["room"])
+  print("Send message: "+ data["message"]+" to "+ data["room"])
