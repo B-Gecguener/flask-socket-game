@@ -1,14 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>GameApp</title>
-  </head>
-  <body>
-    <h1>The Landing Page!</h1>
-    <p>Come, and join a lobby, by pressing the Join-Button</p>
-    <button id="join-btn">Join</button>
-    <script src="/static/landingPageScript.js"></script>
-  </body>
-</html>
+{% extends "base.html" %} {% block scripts %}
+<script src="https://cdn.socket.io/4.1.2/socket.io.min.js"></script>
+{% endblock %} {% block title %} GameApp {% endblock %} {% block content %}
+<h1>The Landing Page!</h1>
+<p>Come, and join a lobby, by pressing the Join-Button</p>
+<button id="join-btn">Join</button>
+<script src="/static/landingPageScript.js"></script>
+{% endblock %}
