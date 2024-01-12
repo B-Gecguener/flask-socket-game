@@ -1,5 +1,5 @@
 from flask import request
-from flask_socketio import emit
+from flask_socketio import emit, join_room
 import random
 import string
 
@@ -13,7 +13,7 @@ from .extensions import io
 def handle_room_creation():
     room_link = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(6)) 
     # ^ generates random lobbylink out of letters and numbers
+    join_room(room_link, sid = request.sid)
+    # ^ move client into created room
     emit('room_created', {'lobby_link': room_link}, room=request.sid) 
     # ^ sends the link back to the calling Client
-
-io.on()

@@ -1,5 +1,5 @@
-from chatapp import create_app, socketio
+from gameapp import create_app, io
 
 app = create_app()
 
-socketio.run(app, allow_unsafe_werkzeug=True)
+io.run(app, allow_unsafe_werkzeug=True)

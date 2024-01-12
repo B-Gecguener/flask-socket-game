@@ -1,6 +1,6 @@
 from flask import Flask
 
-from .events import socketio
+from .events import io
 from .routes import main
 
 def create_app():
@@ -10,6 +10,6 @@ def create_app():
 
     app.register_blueprint(main)
 
-    socketio.init_app(app)
+    io.init_app(app)
 
     return app

@@ -3,11 +3,11 @@ from flask_socketio import emit
 import random
 import string
 
-from .extensions import socketio
+from .extensions import io
 
 users = {}
 
-@socketio.on("create_lobby")
+@io.on("create_lobby")
 def handle_create_lobby():
     lobby_link = generate_lobby_link()
     emit('lobby_created',{'lobby_link': lobby_link }, broadcast=True)
@@ -16,16 +16,16 @@ def generate_lobby_link():
     letters_and_digits = string.ascii_letters + string.digits
     return ''.join(random.choice(letters_and_digits) for _ in range(20))
 
-@socketio.on("connect")
+@io.on("connect")
 def handle_connect():
     print("Client connected!")
 
-@socketio.on("user_join")
+@io.on("user_join")
 def handle_user_join(username):
     print(f"User {username} joined!")
     users[username] = request.sid
 
-@socketio.on("new_message")
+@io.on("new_message")
 def handle_new_message(message):
     print(f"New message: {message}")
     username = None
