@@ -8,4 +8,4 @@ def index():
 
 @app.route("/game/<lobbyID>")
 def game(lobbyID):
-    return render_template("game.html", room = lobbyID)
+    return render_template("game.html", room=lobbyID)
