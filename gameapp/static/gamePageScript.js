@@ -1,6 +1,10 @@
 //--This is the script for the gamepage
 
 //--Global Game Variables
+//Ready Boolean
+let ready = false;
+let opponentReady = false;
+
 //TurnBoolean, if true, its clients turn
 let turn = null;
 
@@ -9,7 +13,7 @@ let ourRoll = null;
 let otherRoll = null;
 
 //TeamID of client
-let team = null;
+let team = 1;
 
 //--On-Load Wrapper
 document.addEventListener("DOMContentLoaded", function () {
@@ -26,6 +30,9 @@ document.addEventListener("DOMContentLoaded", function () {
         sendChatMessage();
       }
     });
+  document
+    .getElementById("ready-button")
+    .addEventListener("click", toggleReady);
 
   //--Connect to room
   function connectToRoom(room) {
@@ -41,6 +48,7 @@ document.addEventListener("DOMContentLoaded", function () {
   //--Ping to room
   //Send a Ping to everybody in the room
   function pingRoom() {
+    team = 2;
     socket.emit("ping_to_server", room);
     // ^ Ask server to send ping to your room
   }
@@ -62,7 +70,10 @@ document.addEventListener("DOMContentLoaded", function () {
   //Listen for chatmessages
   socket.on("chat_message", function (data) {
     console.log("Recived Message from server: " + data);
-    document.getElementById("chat").innerText = data;
+    let ul = document.getElementById("chat");
+    let li = document.createElement("li");
+    li.appendChild(document.createTextNode(data.user + ": " + data.message));
+    ul.appendChild(li);
     // ^ Filling the chat with the message that was recieved
   });
 
@@ -73,13 +84,13 @@ document.addEventListener("DOMContentLoaded", function () {
   function rollForTurn() {
     var roll = Math.random();
     console.log("Rolling for turn. Roll: " + roll);
+    ourRoll = roll;
     socket.emit("roll_for_turn", { roll: roll, team: team, room: room });
     // ^ send roll, teamID and room to the server, to send your teams roll to everybody else in your room
   }
   socket.on("roll_for_turn", function (data) {
     console.log("Roll recieved!");
-    if (data.team == team) ourRoll = data.roll;
-    else otherRoll = data.roll;
+    if (data.team != team) otherRoll = data.roll;
     // ^ save your roll, and other teams roll
     if (ourRoll != null && otherRoll != null) {
       if (ourRoll > otherRoll) {
@@ -103,6 +114,41 @@ document.addEventListener("DOMContentLoaded", function () {
   function rerollTurn() {
     rollForTurn();
   }
+
+  //--Toggle Ready
+  //Toggle between ready and unready
+  function toggleReady() {
+    if (ready) {
+      console.log("We aren't Ready!");
+      ready = false;
+      document.getElementById("ready-button").firstChild.data =
+        "Status: Not Ready";
+    } else {
+      console.log("We aren Ready!");
+      ready = true;
+      document.getElementById("ready-button").firstChild.data = "Status: Ready";
+    }
+    socket.emit("make_ready", { team: team, room: room, status: ready });
+    console.log("Sending ready-status: " + ready);
+  }
+  socket.on("make_ready", function (data) {
+    if (data.team != team) {
+      console.log("Opponent Teams ready-status is " + data.status);
+      opponentReady = data.status;
+      if (opponentReady) {
+        document.getElementById("opponent-ready-status").innerText =
+          "Opponent: Ready";
+      } else {
+        document.getElementById("opponent-ready-status").innerText =
+          "Opponent: Not Ready";
+      }
+      if (ready && opponentReady) {
+        start();
+      }
+    }
+  });
+
+  socket.on("start", rollForTurn);
 
   function supposeMove(gamechanges) {
     socket.broadcast.emit("sup_move", { move: gamechanges, room: room });
