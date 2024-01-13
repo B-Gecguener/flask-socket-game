@@ -1,5 +1,5 @@
-from gameapp import create_app, io
+from gameapp import app , io
 
-app = create_app()
+print("this is a test")
 
 io.run(app, allow_unsafe_werkzeug=True)

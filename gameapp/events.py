@@ -1,7 +1,7 @@
 from flask import request
-from flask_socketio import emit, join_room
+from flask_socketio import SocketIO, emit, join_room
 
-from .extensions import io
+io = SocketIO()
 
 #This is the server-sided code for socket.io (server is 'io', client is 'socket')
 #The following lines are the events that will be catched and answerd by the server
