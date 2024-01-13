@@ -1,5 +1,16 @@
 //--This is the script for the gamepage
 
+//--Global Game Variables
+//TurnBoolean, if true, its clients turn
+let turn = null;
+
+//Global save of rolls, to decide for turn
+let ourRoll = null;
+let otherRoll = null;
+
+//TeamID of client
+let team = null;
+
 //--On-Load Wrapper
 document.addEventListener("DOMContentLoaded", function () {
   //This wrapper-function ensures, that the websocket connects after the whole document was loaded
@@ -8,6 +19,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
   //--HTML Elenments and Eventlisteners
   document.getElementById("ping-room").addEventListener("click", pingRoom);
+  document
+    .getElementById("message")
+    .addEventListener("keyup", function (event) {
+      if (event.key == "Enter") {
+        sendChatMessage();
+      }
+    });
 
   //--Connect to room
   function connectToRoom(room) {
@@ -24,7 +42,7 @@ document.addEventListener("DOMContentLoaded", function () {
   //Send a Ping to everybody in the room
   function pingRoom() {
     socket.emit("ping_to_server", room);
-    //Ask server to send ping to your room
+    // ^ Ask server to send ping to your room
   }
   //Listen for ping to your room
   socket.on("ping_to_client", function () {
@@ -32,16 +50,60 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   //--Chat
-  function sendChatMessage(message) {
+  function sendChatMessage() {
     //This sends the provided string as a message to the lobbys chat
+    let message = document.getElementById("message").value;
+    // ^ get the message string out of the input line
     socket.emit("chat_message", { message: message, room: room });
+    // ^ send message to the room, the socket is in
+    document.getElementById("message").value = "";
+    console.log("Message send to server: " + message);
   }
   //Listen for chatmessages
   socket.on("chat_message", function (data) {
-    //Here append new chatparagraph with content data.message
+    console.log("Recived Message from server: " + data);
+    document.getElementById("chat").innerText = data;
+    // ^ Filling the chat with the message that was recieved
   });
 
-  //--Game changes
+  //--Game code
+
+  //--Turn Decition
+  //These (chaotic hell of) functions decides who begins
+  function rollForTurn() {
+    var roll = Math.random();
+    console.log("Rolling for turn. Roll: " + roll);
+    socket.emit("roll_for_turn", { roll: roll, team: team, room: room });
+    // ^ send roll, teamID and room to the server, to send your teams roll to everybody else in your room
+  }
+  socket.on("roll_for_turn", function (data) {
+    console.log("Roll recieved!");
+    if (data.team == team) ourRoll = data.roll;
+    else otherRoll = data.roll;
+    // ^ save your roll, and other teams roll
+    if (ourRoll != null && otherRoll != null) {
+      if (ourRoll > otherRoll) {
+        turn = true;
+        console.log("We start.");
+      } else if (ourRoll > otherRoll) {
+        turn = false;
+        console.log("We are second.");
+      } else {
+        console.log("Reroll needed.");
+        turn = null;
+        rerollTurn();
+      }
+      ourRoll = null;
+      otherRoll = null;
+    }
+    // ^ if both rolls are saved, decide which one is bigger, its that teams turn
+  });
+
+  //Reroll Turn, (if both rolls are the same or something went wrong)
+  function rerollTurn() {
+    rollForTurn();
+  }
+
   function supposeMove(gamechanges) {
     socket.broadcast.emit("sup_move", { move: gamechanges, room: room });
   }

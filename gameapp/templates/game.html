@@ -10,9 +10,12 @@
     <script>
       var room = "{{room}}";
     </script>
-    <script src="/static/clientAPI.js"></script>
+    <script src="/static/gamePageScript.js"></script>
     <h1>The Game Page!</h1>
-    <h2>current room: {{room}}</h2>
     <button id="ping-room">Ping!</button>
+    <h2>current room: {{room}}</h2>
+    <p>Say hello to chat:</p>
+    <input type="text" id="message" placeholder="Enter a Message" />
+    <p id="chat">No messages</p>
   </body>
 </html>

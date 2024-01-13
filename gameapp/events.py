@@ -25,4 +25,9 @@ def ping(room):
 @io.on("chat_message")
 def handle_chat_message(data):
   io.emit("chat_message", data["message"], to=data["room"])
-  print("Send message: "+ data["message"]+" to "+ data["room"])
+  # ^ send message from client back to all others in clients room
+  print("Deliver message '"+ data["message"]+"' to "+ data["room"])
+
+@io.on("roll_for_turn")
+def roll_for_turn(data):
+  io.emit("roll_for_turn", {"team": data["team"], "roll": data["roll"] }, to=data["room"])
