@@ -1,5 +1,5 @@
 //--This is the script for the gamepage
-
+let socketPrefix = "[socket]: ";
 //--Global Game Variables
 //Ready Boolean
 let ready = false;
@@ -39,9 +39,9 @@ document.addEventListener("DOMContentLoaded", function () {
     //Call this apon connecting to the game room
     //Moves the client into a socket.io room, which is later used to broadcast the gamechanges to all clients in this lobby / room
     socket.emit("connect_me", room);
-    console.log("asking for connection on " + room);
+    console.log(socketPrefix + "asking for connection on " + room);
     socket.on("connected_to_room", function () {
-      console.log("successfully connected to " + room + "!");
+      console.log(socketPrefix + "successfully connected to " + room + "!");
     });
   }
 
@@ -54,7 +54,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
   //Listen for ping to your room
   socket.on("ping_to_client", function () {
-    console.log("Pinged!");
+    console.log(socketPrefix + "Pinged!");
   });
 
   //--Chat
@@ -65,11 +65,11 @@ document.addEventListener("DOMContentLoaded", function () {
     socket.emit("chat_message", { message: message, room: room });
     // ^ send message to the room, the socket is in
     document.getElementById("message").value = "";
-    console.log("Message send to server: " + message);
+    console.log(socketPrefix + "Message send to server: " + message);
   }
   //Listen for chatmessages
   socket.on("chat_message", function (data) {
-    console.log("Recived Message from server: " + data);
+    console.log(socketPrefix + "Recived Message from server: " + data);
     let ul = document.getElementById("chat");
     let li = document.createElement("li");
     li.appendChild(document.createTextNode(data.user + ": " + data.message));
@@ -83,24 +83,27 @@ document.addEventListener("DOMContentLoaded", function () {
   //These (chaotic hell of) functions decides who begins
   function rollForTurn() {
     var roll = Math.random();
-    console.log("Rolling for turn. Roll: " + roll);
+    console.log(socketPrefix + "Rolling for turn. Roll: " + roll);
     ourRoll = roll;
     socket.emit("roll_for_turn", { roll: roll, team: team, room: room });
     // ^ send roll, teamID and room to the server, to send your teams roll to everybody else in your room
   }
   socket.on("roll_for_turn", function (data) {
-    console.log("Roll recieved!");
-    if (data.team != team) otherRoll = data.roll;
+    if (data.team != team) {
+      otherRoll = data.roll;
+      console.log(socketPrefix + "Roll recieved!");
+      console.log(socketPrefix + "Opponent Roll: " + data.roll);
+    }
     // ^ save your roll, and other teams roll
     if (ourRoll != null && otherRoll != null) {
       if (ourRoll > otherRoll) {
         turn = true;
-        console.log("We start.");
-      } else if (ourRoll > otherRoll) {
+        console.log(socketPrefix + "We start.");
+      } else if (ourRoll < otherRoll) {
         turn = false;
-        console.log("We are second.");
+        console.log(socketPrefix + "We are second.");
       } else {
-        console.log("Reroll needed.");
+        console.log(socketPrefix + "Reroll needed.");
         turn = null;
         rerollTurn();
       }
@@ -119,21 +122,23 @@ document.addEventListener("DOMContentLoaded", function () {
   //Toggle between ready and unready
   function toggleReady() {
     if (ready) {
-      console.log("We aren't Ready!");
+      console.log(socketPrefix + "We aren't Ready!");
       ready = false;
       document.getElementById("ready-button").firstChild.data =
         "Status: Not Ready";
     } else {
-      console.log("We aren Ready!");
+      console.log(socketPrefix + "We are Ready!");
       ready = true;
       document.getElementById("ready-button").firstChild.data = "Status: Ready";
     }
     socket.emit("make_ready", { team: team, room: room, status: ready });
-    console.log("Sending ready-status: " + ready);
+    console.log(socketPrefix + "Sending ready-status: " + ready);
   }
   socket.on("make_ready", function (data) {
     if (data.team != team) {
-      console.log("Opponent Teams ready-status is " + data.status);
+      console.log(
+        socketPrefix + "Opponent Teams ready-status is " + data.status
+      );
       opponentReady = data.status;
       if (opponentReady) {
         document.getElementById("opponent-ready-status").innerText =
@@ -148,6 +153,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
+  function start() {
+    socket.emit("start_game", room);
+  }
   socket.on("start", rollForTurn);
 
   function supposeMove(gamechanges) {

@@ -33,6 +33,7 @@ def handle_chat_message(data):
 @io.on("roll_for_turn")
 def roll_for_turn(data):
   # ^ send that teams roll to the room, needed to decide whos first
+  print(prefix+"roll '"+str(data["roll"])+"' recived from room '"+data["room"]+"'")
   io.emit("roll_for_turn", {"team": data["team"], "roll": data["roll"] }, to=data["room"])
 
 @io.on("make_ready")
