@@ -79,6 +79,41 @@ document.addEventListener("DOMContentLoaded", function () {
 
   //--Game code
 
+  //--Toggle Ready
+  //Toggle between ready and unready
+  function toggleReady() {
+    if (ready) {
+      console.log(socketPrefix + "We aren't Ready!");
+      ready = false;
+      document.getElementById("ready-button").firstChild.data =
+        "Status: Not Ready";
+    } else {
+      console.log(socketPrefix + "We are Ready!");
+      ready = true;
+      document.getElementById("ready-button").firstChild.data = "Status: Ready";
+    }
+    socket.emit("make_ready", { team: team, room: room, status: ready });
+    console.log(socketPrefix + "Sending ready-status: " + ready);
+  }
+  socket.on("make_ready", function (data) {
+    if (data.team != team) {
+      console.log(
+        socketPrefix + "Opponent Teams ready-status is " + data.status
+      );
+      opponentReady = data.status;
+      if (opponentReady) {
+        document.getElementById("opponent-ready-status").innerText =
+          "Opponent: Ready";
+      } else {
+        document.getElementById("opponent-ready-status").innerText =
+          "Opponent: Not Ready";
+      }
+      if (ready && opponentReady) {
+        start();
+      }
+    }
+  });
+
   //--Turn Decition
   //These (chaotic hell of) functions decides who begins
   function rollForTurn() {
@@ -117,41 +152,6 @@ document.addEventListener("DOMContentLoaded", function () {
   function rerollTurn() {
     rollForTurn();
   }
-
-  //--Toggle Ready
-  //Toggle between ready and unready
-  function toggleReady() {
-    if (ready) {
-      console.log(socketPrefix + "We aren't Ready!");
-      ready = false;
-      document.getElementById("ready-button").firstChild.data =
-        "Status: Not Ready";
-    } else {
-      console.log(socketPrefix + "We are Ready!");
-      ready = true;
-      document.getElementById("ready-button").firstChild.data = "Status: Ready";
-    }
-    socket.emit("make_ready", { team: team, room: room, status: ready });
-    console.log(socketPrefix + "Sending ready-status: " + ready);
-  }
-  socket.on("make_ready", function (data) {
-    if (data.team != team) {
-      console.log(
-        socketPrefix + "Opponent Teams ready-status is " + data.status
-      );
-      opponentReady = data.status;
-      if (opponentReady) {
-        document.getElementById("opponent-ready-status").innerText =
-          "Opponent: Ready";
-      } else {
-        document.getElementById("opponent-ready-status").innerText =
-          "Opponent: Not Ready";
-      }
-      if (ready && opponentReady) {
-        start();
-      }
-    }
-  });
 
   function start() {
     socket.emit("start_game", room);
