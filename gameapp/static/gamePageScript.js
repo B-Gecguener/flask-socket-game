@@ -156,6 +156,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function start() {
     socket.emit("start_game", room);
   }
+
   socket.on("start", rollForTurn);
 
   function supposeMove(gamechanges) {
