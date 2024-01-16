@@ -1,16 +1,34 @@
 {% extends 'base.html' %}
+
 {% block title %}
+Tic Tac Toe
 {% endblock %}
+
 {% block imports %}
+
 {%endblock %}
 {% block content %}
 
-
-
 <body>
-  <h1>The Landing Page!</h1>
-  <p>Come, and join a lobby, by pressing the Join-Button</p>
-  <button id="join-btn">Join</button>
+  <div id="logo-container">
+    <img src="/static/img/logo-ttt.png" alt="logo">
+  </div>
+  <div id="form-container">
+    <h1>The Landing Page!</h1>
+    <p>Come, and join a lobby, by pressing the Join-Button</p>
+    <button id="join-btn">Join</button>
+  </div>
+  <div id="bg-container">
+    <div class="bg">
+      <div class="bg-item count-01"></div>
+      <div class="bg-item count-02"></div>
+      <div class="bg-item count-03"></div>
+      <div class="bg-item count-04"></div>
+      <div class="bg-item count-05"></div>
+      <div class="bg-item count-06"></div>
+
+    </div>
+  </div>
   <script src="/static/landingPageScript.js"></script>
 </body>
 
