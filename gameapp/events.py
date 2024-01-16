@@ -14,8 +14,19 @@ def connect_client_to_room(room):
   print(prefix+"connect client '"+request.sid+"' to room '"+room+"'")
   join_room(room, sid = request.sid)
   # ^ move client into room
+  io.emit("get_name", {"for": request.sid, "toUser": "true"}, to=room)
+  # ^ get all names from rooms clients
   io.emit("connected_to_room", to=request.sid)
   # ^ inform client about connection
+
+io.on("my_name")
+def name(data):
+  if (data["toUser"] == "true"):
+    io.emit("lobby_names", {"user-sid": request.sid, "name": data["name"]}, to=data["for"])
+    # ^ send names back to requester
+  elif (data["toUser"] == "false"): 
+    io.emit("lobby_names", {"user-sid": request.sid, "name": data["name"]}, to=data["for"])
+    # ^ send names back to room
 
 @io.on("ping_to_server")
 # ^ ping by client to clients room

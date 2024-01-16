@@ -15,6 +15,10 @@ let otherRoll = null;
 //TeamID of client
 let team = 1;
 
+//Name List
+let names = {};
+let myName = "Anonymos";
+
 //--On-Load Wrapper
 document.addEventListener("DOMContentLoaded", function () {
   //This wrapper-function ensures, that the websocket connects after the whole document was loaded
@@ -45,6 +49,20 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  //--Names
+  socket.on("get_name", function (data) {
+    socket.emit("my_name", {
+      name: myName,
+      for: data.for,
+      toUser: data.toUser,
+    });
+    //answer server with my name
+  });
+  socket.on("lobby_names", function (data) {
+    names[data["user-sid"]] = data.name;
+    //insert new user and name or update users name
+  });
+
   //--Ping to room
   //Send a Ping to everybody in the room
   function pingRoom() {
@@ -70,9 +88,10 @@ document.addEventListener("DOMContentLoaded", function () {
   //Listen for chatmessages
   socket.on("chat_message", function (data) {
     console.log(socketPrefix + "Recived Message from server: " + data);
-    let ul = document.getElementById("chat");
-    let li = document.createElement("li");
-    li.appendChild(document.createTextNode(data.user + ": " + data.message));
+    var ul = document.getElementById("chat");
+    var li = document.createElement("li");
+    var userName = names[data.user] + "";
+    li.appendChild(document.createTextNode(userName + ": " + data.message));
     ul.appendChild(li);
     // ^ Filling the chat with the message that was recieved
   });
