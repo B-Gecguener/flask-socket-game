@@ -9,8 +9,8 @@ body {
 #logo-container {
   height: 80px;
   position: absolute;
-  top:16px;
-  left: 16px:
+  top: 16px;
+  left: 16px;
 }
 #logo-container img {
   height: 100%;
@@ -24,19 +24,75 @@ body {
   overflow: hidden;
   z-index: -1;
 }
-#form-container{
-    position: absolute;
-    top:128px;
-    right:64px;
-    display: inline-flex;
-    padding: 32px;
-    flex-direction: column;
-    align-items: flex-start;
-    /* gap: 21px; */
-    background-color: white;
-    width: 300px;
-    border-radius: 32px;
-    box-shadow: 0px 6px 56px 0px rgba(0, 0, 0, 0.12);
+#welcome-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+button {
+  width: 100%;
+  border: 0;
+  border-radius: 32px;
+  background: #333;
+  color: white;
+  font-family: inherit;
+  font-size: 16px;
+  line-height: 1.2;
+  white-space: nowrap;
+  text-decoration: none;
+  padding: 16px 24px;
+  cursor: pointer;
+}
+.filled {
+  background: #333;
+  color: white;
+  border: 0;
+}
+.outline {
+  background: white;
+  color: #333;
+  border: 2px solid #333;
+}
+.welcome {
+  margin-top: 128px;
+  display: inline-flex;
+  padding: 32px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+  background-color: white;
+  width: 300px;
+  border-radius: 32px;
+  box-shadow: 0px 6px 56px 0px rgba(0, 0, 0, 0.12);
+}
+.welcome > * {
+  margin: 0;
+}
+
+.welcome .text-input-container {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  flex-direction: column;
+}
+.welcome label {
+  font-weight: 600;
+}
+.welcome input[type="text"] {
+  box-sizing: border-box;
+  font-family: inherit;
+  font-size: 18px;
+  color: inherit;
+  border: solid 2px #e0e0e0;
+  border-radius: 8px;
+  outline: none;
+  padding: 12px;
+  width: 100%;
+}
+
+.welcome a {
+  font-weight: 600;
+  color: inherit;
 }
 .bg {
   position: absolute;
@@ -86,4 +142,20 @@ body {
   top: 478px;
   background-image: url("/static/img/bg-cross.png");
   transform: rotate(-33deg);
+}
+.count-07 {
+  margin-left: 9%;
+  top: 774px;
+  background-image: url("/static/img/bg-circle.png");
+}
+.count-08 {
+  margin-left: 46%;
+  top: 712px;
+  background-image: url("/static/img/bg-cross.png");
+  transform: rotate(21deg);
+}
+.count-09 {
+  margin-left: 75%;
+  top: 813px;
+  background-image: url("/static/img/bg-circle.png");
 }

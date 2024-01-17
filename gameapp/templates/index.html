@@ -13,10 +13,22 @@ Tic Tac Toe
   <div id="logo-container">
     <img src="/static/img/logo-ttt.png" alt="logo">
   </div>
-  <div id="form-container">
-    <h1>The Landing Page!</h1>
-    <p>Come, and join a lobby, by pressing the Join-Button</p>
-    <button id="join-btn">Join</button>
+  <div id="welcome-container">
+    <div class="welcome">
+      <h1>Hello!</h1>
+      <p>Wanna play Tic Tac Toe? <br> Join a lobby or create one and share it with friends.</p>
+      <div class="text-input-container">
+        <label for="name">Nickname</label>
+        <input type="text" id="name" name="name" required minlength="1" maxlength="16" />
+      </div>
+      <div class="text-input-container">
+        <label for="room">Room</label>
+        <input type="text" id="room" name="room" />
+      </div>
+      <button id="join-btn" class="filled">Join</button>
+      <button id="create-btn" class="outline">Create</button>
+      <small>Want to keep your name? <a href="">Create an account</a></small>
+    </div>
   </div>
   <div id="bg-container">
     <div class="bg">
@@ -26,6 +38,9 @@ Tic Tac Toe
       <div class="bg-item count-04"></div>
       <div class="bg-item count-05"></div>
       <div class="bg-item count-06"></div>
+      <div class="bg-item count-07"></div>
+      <div class="bg-item count-08"></div>
+      <div class="bg-item count-09"></div>
 
     </div>
   </div>
