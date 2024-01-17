@@ -17,16 +17,20 @@ Tic Tac Toe
     <div class="welcome">
       <h1>Hello!</h1>
       <p>Wanna play Tic Tac Toe? <br> Join a lobby or create one and share it with friends.</p>
-      <div class="text-input-container">
-        <label for="name">Nickname</label>
-        <input type="text" id="name" name="name" required minlength="1" maxlength="16" />
-      </div>
-      <div class="text-input-container">
-        <label for="room">Room</label>
-        <input type="text" id="room" name="room" />
-      </div>
-      <button id="join-btn" class="filled">Join</button>
-      <button id="create-btn" class="outline">Create</button>
+      <form action="/" method="post">
+        <div class="text-input-container">
+          <label for="name">Nickname</label>
+          <input type="text" id="name" name="name" required minlength="1" maxlength="16" />
+        </div>
+        <div class="text-input-container">
+          <label for="room">Room</label>
+          <input type="text" id="room" name="room" required minlength="1" maxlength="16" />
+        </div>
+        <!-- <button id="join-btn" class="filled">Join</button>
+        <button id="create-btn" class="outline">Create</button> -->
+        <input class="filled" type="submit" name="join" value="Join">
+        <input class="outline" type="submit" name="create" value="Create">
+      </form>
       <small>Want to keep your name? <a href="">Create an account</a></small>
     </div>
   </div>

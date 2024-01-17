@@ -53,6 +53,17 @@ button {
   color: #333;
   border: 2px solid #333;
 }
+input[type="submit"] {
+  width: 100%;
+  border-radius: 32px;
+  font-family: inherit;
+  font-size: 16px;
+  line-height: 1.2;
+  white-space: nowrap;
+  text-decoration: none;
+  padding: 16px 24px;
+  cursor: pointer;
+}
 .welcome {
   margin-top: 128px;
   display: inline-flex;
@@ -64,6 +75,11 @@ button {
   width: 300px;
   border-radius: 32px;
   box-shadow: 0px 6px 56px 0px rgba(0, 0, 0, 0.12);
+}
+.welcome form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 .welcome > * {
   margin: 0;
