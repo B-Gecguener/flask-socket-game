@@ -9,9 +9,10 @@
 {% block content %}
 <script>
   var room = "{{room}}";
+  var name = "{{name}}";
 </script>
 <script src="/static/gamePageScript.js"></script>
-<h1>The Game Page!</h1>
+<h1>Welcome to the Game, {{name}}!</h1>
 <button id="ping-room">Ping!</button>
 <h2>current room: {{room}}</h2>
 <button id="ready-button">Status: Not Ready</button>
