@@ -4,7 +4,6 @@ let socketPrefix = "[socket]: ";
 //Ready Boolean
 let ready = false;
 let opponentReady = false;
-
 //TurnBoolean, if true, its clients turn
 let turn = null;
 
@@ -13,11 +12,12 @@ let ourRoll = null;
 let otherRoll = null;
 
 //TeamID of client
-let team = 1;
+let team = "X";
 
 //Name List
 let names = {};
-let myName = "Anonymos";
+let teamMembers = {};
+let myName = name;
 
 //--On-Load Wrapper
 document.addEventListener("DOMContentLoaded", function () {
@@ -37,6 +37,7 @@ document.addEventListener("DOMContentLoaded", function () {
   document
     .getElementById("ready-button")
     .addEventListener("click", toggleReady);
+  document.getElementById("team-toggle").addEventListener("click", toggleTeam);
 
   //--Connect to room
   function connectToRoom(room) {
@@ -51,22 +52,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
   //--Names
   socket.on("get_name", function (data) {
+    console.log(socketPrefix + "our name was requested!");
     socket.emit("my_name", {
       name: myName,
       for: data.for,
-      toUser: data.toUser,
     });
     //answer server with my name
   });
   socket.on("lobby_names", function (data) {
     names[data["user-sid"]] = data.name;
+    console.log(socketPrefix + "recived name: " + names[data["user-sid"]]);
     //insert new user and name or update users name
   });
 
   //--Ping to room
   //Send a Ping to everybody in the room
   function pingRoom() {
-    team = 2;
     socket.emit("ping_to_server", room);
     // ^ Ask server to send ping to your room
   }
@@ -87,7 +88,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
   //Listen for chatmessages
   socket.on("chat_message", function (data) {
-    console.log(socketPrefix + "Recived Message from server: " + data);
+    console.log(socketPrefix + "Recived Message from server: " + data.message);
     var ul = document.getElementById("chat");
     var li = document.createElement("li");
     var userName = names[data.user] + "";
@@ -102,17 +103,12 @@ document.addEventListener("DOMContentLoaded", function () {
   //Toggle between ready and unready
   function toggleReady() {
     if (ready) {
-      console.log(socketPrefix + "We aren't Ready!");
-      ready = false;
-      document.getElementById("ready-button").firstChild.data =
-        "Status: Not Ready";
+      socket.emit("make_ready", { team: team, room: room, status: "false" });
+      console.log(socketPrefix + "Sending ready-status: false");
     } else {
-      console.log(socketPrefix + "We are Ready!");
-      ready = true;
-      document.getElementById("ready-button").firstChild.data = "Status: Ready";
+      socket.emit("make_ready", { team: team, room: room, status: "true" });
+      console.log(socketPrefix + "Sending ready-status: true");
     }
-    socket.emit("make_ready", { team: team, room: room, status: ready });
-    console.log(socketPrefix + "Sending ready-status: " + ready);
   }
   socket.on("make_ready", function (data) {
     if (data.team != team) {
@@ -129,6 +125,19 @@ document.addEventListener("DOMContentLoaded", function () {
       }
       if (ready && opponentReady) {
         start();
+      }
+    }
+    if (data.team == team) {
+      if (ready) {
+        console.log(socketPrefix + "We aren't Ready!");
+        ready = false;
+        document.getElementById("ready-button").firstChild.data =
+          "Status: Not Ready";
+      } else {
+        console.log(socketPrefix + "We are Ready!");
+        ready = true;
+        document.getElementById("ready-button").firstChild.data =
+          "Status: Ready";
       }
     }
   });
@@ -181,4 +190,33 @@ document.addEventListener("DOMContentLoaded", function () {
   function supposeMove(gamechanges) {
     socket.broadcast.emit("sup_move", { move: gamechanges, room: room });
   }
+
+  //--Choose Team
+  //Toggles the Team and informs other Clients
+  function toggleTeam() {
+    if (team == "X") {
+      team = "O";
+      console.log(socketPrefix + "Switching to Team O");
+      socket.emit("switch_team", { team: "O", room: room });
+      document.getElementById("team-toggle").firstChild.data = "O Team";
+    } else {
+      team = "X";
+      console.log(socketPrefix + "Switching to team X");
+      socket.emit("switch_team", { team: "X", room: room });
+      document.getElementById("team-toggle").firstChild.data = "X Team";
+    }
+  }
+  socket.on("switch_team", function (data) {
+    console.log(
+      socketPrefix +
+        "'" +
+        names[data.user] +
+        "' is now in Team '" +
+        data.team +
+        "'"
+    );
+    teamMembers[data.user] = data.team;
+  });
+
+  //Keep code within this wrapper!
 });

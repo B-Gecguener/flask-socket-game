@@ -1,12 +1,7 @@
-{% extends 'base.html' %}
-
-{% block title %}Tic Tac Toe{% endblock %}
-
-{% block imports %}
+{% extends 'base.html' %} {% block title %}Tic Tac Toe{% endblock %} {% block
+imports %}
 <script src="https://cdn.socket.io/4.1.2/socket.io.min.js"></script>
-{% endblock %}
-
-{% block content %}
+{% endblock %} {% block content %}
 <script>
   var room = "{{room}}";
   var name = "{{name}}";
@@ -17,6 +12,7 @@
 <h2>current room: {{room}}</h2>
 <button id="ready-button">Status: Not Ready</button>
 <p id="opponent-ready-status">Opponent: Not Ready</p>
+<button id="team-toggle">X Team</button>
 <p>Say hello to chat:</p>
 <input type="text" id="message" placeholder="Enter a Message" />
 <ul id="chat"></ul>

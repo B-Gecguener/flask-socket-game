@@ -14,19 +14,21 @@ def connect_client_to_room(room):
   print(prefix+"connect client '"+request.sid+"' to room '"+room+"'")
   join_room(room, sid = request.sid)
   # ^ move client into room
-  io.emit("get_name", {"for": request.sid, "toUser": "true"}, to=room)
+  io.emit("get_name", {"for": request.sid}, to=room)
+  # ^ get all other names from the room to client
+  io.emit("get_name", {"for": room}, to=request.sid)
+  # ^ get clients name to all clients in room
+  io.emit("switch_team", {"user": request.sid, "team": "X"}, to=room)
+  print(prefix+"request rooms names for user")
   # ^ get all names from rooms clients
   io.emit("connected_to_room", to=request.sid)
   # ^ inform client about connection
 
-io.on("my_name")
-def name(data):
-  if (data["toUser"] == "true"):
-    io.emit("lobby_names", {"user-sid": request.sid, "name": data["name"]}, to=data["for"])
-    # ^ send names back to requester
-  elif (data["toUser"] == "false"): 
-    io.emit("lobby_names", {"user-sid": request.sid, "name": data["name"]}, to=data["for"])
-    # ^ send names back to room
+@io.on("my_name")
+def name_recieved(data):
+  print(prefix+"name of user recieved")
+  io.emit("lobby_names", {"user-sid": request.sid, "name": data["name"]}, to=data["for"])
+  # ^ send names back to requester
 
 @io.on("ping_to_server")
 # ^ ping by client to clients room
@@ -58,3 +60,7 @@ def start_game(room):
   # ^ this checks
   print(prefix+"game start in room '"+room+"'")
   io.emit("start", to=room)
+
+@io.on("switch_team")
+def switch_team(data):
+  io.emit("switch_team", { "team": data["team"], "user": request.sid }, to=data["room"])
