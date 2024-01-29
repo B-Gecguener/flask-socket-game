@@ -10,7 +10,7 @@ imports %}
 <div id="logo-container">
   <img src="/static/img/logo-ttt.png" alt="logo" />
 </div>
-<div class="columns">
+<main>
   <div class="game-container round-box">
     <div id="game-board" class="">
       <div class="tile-row">
@@ -54,11 +54,14 @@ imports %}
       </div>
     </div>
     <div id="chat" class="round-box">
-      <input type="text" id="message" placeholder="Enter a Message" />
-      <div id="messages"></div>
+      <div class="gradient" id="grd-top"></div>
+      <div class="gradient hidden" id="grd-bottom"></div>
+      <input type="text" id="message" placeholder="Message..." />
+      <div id="messages">
+      </div>
     </div>
   </div>
-</div>
+</main>
 <h1>Welcome to the Game, {{name}}!</h1>
 <button id="ping-room" class="filled">Ping!</button>
 <h2>current room: {{room}}</h2>

@@ -111,33 +111,30 @@ input[type="text"] {
   font-weight: 600;
   color: inherit;
 }
-.columns {
+main {
   /* width: 100%; */
   display: flex;
   flex-direction: row;
   gap: 24px;
-  height: 70vh;
+  height: 636px;
   margin: 64px auto 0 auto;
   max-width: 960px;
 }
 @media (max-width: 720px) {
-  .columns {
-    /* width: 100%; */
-    display: flex;
+  main {
     flex-direction: column;
-    gap: 24px;
     height: auto;
-    margin: 64px auto 0 auto;
-    max-width: 960px;
+  }
+  .game-container {
+    flex-grow: 1;
+    width: 100%;
+    min-width: 0;
   }
 }
 .game-container {
-  /* width: 100%; */
   flex-grow: 1;
-  max-width: 70vh;
   padding: 32px;
   display: flex;
-  /* flex-direction: column; */
   justify-content: center;
   align-items: center;
 }
@@ -258,11 +255,14 @@ input[type="text"] {
 }
 #chat {
   /* min-height fixes overflow issues... god knows why. */
+  position: relative;
   flex: 1;
   min-height: 0;
   display: flex;
   flex-direction: column-reverse;
   gap: 16px;
+  /* border-radius: 32px;
+  overflow: hidden; */
 }
 @media (max-width: 720px) {
   #chat {
@@ -273,11 +273,39 @@ input[type="text"] {
     flex-direction: column-reverse;
   }
 }
+.gradient {
+  position: absolute;
+  pointer-events: none;
+  height: 50%;
+  width: calc(100% - 32px - 16px);
+  left: 0;
+}
+#grd-top {
+  height: 50%;
+  top: 32px;
+  background: linear-gradient(
+    0deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0) 80%,
+    rgba(255, 255, 255, 1) 100%
+  );
+}
+#grd-bottom {
+  height: 50%;
+  bottom: 97px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0) 80%,
+    rgba(255, 255, 255, 1) 100%
+  );
+}
 #messages {
   overflow-y: auto;
 }
 #messages div {
   margin-bottom: 4px;
+  padding-right: 16px;
 }
 #messages > div > p:first-child {
   font-weight: bold;

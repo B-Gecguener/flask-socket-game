@@ -112,6 +112,7 @@ document.addEventListener("DOMContentLoaded", function () {
     var parentElem = document.getElementById("messages");
     var msgElem = document.createElement("div");
     var nameElem = document.createElement("p");
+    var grdBottom = document.getElementById("grd-bottom");
     nameElem.appendChild(document.createTextNode(names[data.user] + ": "));
 
     var contentElem = document.createElement("p");
@@ -125,6 +126,21 @@ document.addEventListener("DOMContentLoaded", function () {
     // );
     parentElem.appendChild(msgElem);
     parentElem.scrollTop = parentElem.scrollHeight;
+
+    parentElem.addEventListener("scroll", (event) => {
+      let oH = event.target.offsetHeight;
+      let sT = event.target.scrollTop;
+      let sH = event.target.scrollHeight;
+      console.log("offsetHeight: " + oH);
+      console.log("scrollTop: " + sT);
+      console.log("scrollHeight: " + sH);
+      let scrollBottom = sH - sT - oH;
+      if (scrollBottom == 0) {
+        grdBottom.classList.add("hidden");
+      } else {
+        grdBottom.classList.remove("hidden");
+      }
+    });
 
     // ^ Filling the chat with the message that was recieved
   });
