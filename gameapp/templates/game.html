@@ -14,17 +14,17 @@ imports %}
   <div class="game-container round-box">
     <div id="game-board" class="">
       <div class="tile-row">
-        <div class="tile cross" id="tile-01"></div>
+        <div class="tile empty" id="tile-01"></div>
         <div class="tile empty" id="tile-02"></div>
         <div class="tile empty" id="tile-03"></div>
       </div>
       <div class="tile-row">
-        <div class="tile circle" id="tile-04"></div>
-        <div class="tile circle" id="tile-05"></div>
+        <div class="tile empty" id="tile-04"></div>
+        <div class="tile empty" id="tile-05"></div>
         <div class="tile empty" id="tile-06"></div>
       </div>
       <div class="tile-row">
-        <div class="tile cross" id="tile-07"></div>
+        <div class="tile empty" id="tile-07"></div>
         <div class="tile empty" id="tile-08"></div>
         <div class="tile empty" id="tile-09"></div>
       </div>
@@ -36,11 +36,26 @@ imports %}
   </div>
   <div class="side">
     <div id="stats" class="round-box">
-
+      <div class="room">
+        <small>Room:</small>
+        <h2>{{room}}</h2>
+      </div>
+      <div class="players">
+        <div class="player-column" id="stats-self">
+          <small class="turn-indicator">You:</small>
+          <p class="red">{{name}}</p>
+          <h1>0</h1>
+        </div>
+        <div class="player-column" id="stats-opponent">
+          <small>Opponent:</small>
+          <p class="green">Empty</p>
+          <h1>0</h1>
+        </div>
+      </div>
     </div>
     <div id="chat" class="round-box">
       <input type="text" id="message" placeholder="Enter a Message" />
-      <ul id="chat"></ul>
+      <div id="messages"></div>
     </div>
   </div>
 </div>

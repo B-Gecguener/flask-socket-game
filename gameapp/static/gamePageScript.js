@@ -26,6 +26,25 @@ document.addEventListener("DOMContentLoaded", function () {
   const socket = io.connect();
   connectToRoom(room);
 
+  //--Stats
+  //These are the html elements and their respective classes
+  //that should be changed depending on the game state:
+
+  let statsSelf = document.getElementById("stats-self");
+  let statsOpponent = document.getElementById("stats-opponent");
+
+  //"turn-indicator" depending on which turn it is
+  let labelSelfElem = statsSelf.children[0];
+  let labelOpponentElem = statsOpponent.children[0];
+
+  //"red" "green" depending on which team it is
+  let nameSelfElem = statsSelf.children[1];
+  let nameOpponentElem = statsOpponent.children[1];
+
+  //depending on how many wins a player has
+  let scoreSelfElem = statsSelf.children[2];
+  let scoreOpponentElem = statsOpponent.children[2];
+
   //--HTML Elenments and Eventlisteners
   document.getElementById("ping-room").addEventListener("click", pingRoom);
   document
@@ -90,11 +109,23 @@ document.addEventListener("DOMContentLoaded", function () {
   //Listen for chatmessages
   socket.on("chat_message", function (data) {
     console.log(socketPrefix + "Recived Message from server: " + data.message);
-    var ul = document.getElementById("chat");
-    var li = document.createElement("li");
-    var userName = names[data.user] + "";
-    li.appendChild(document.createTextNode(userName + ": " + data.message));
-    ul.appendChild(li);
+    var parentElem = document.getElementById("messages");
+    var msgElem = document.createElement("div");
+    var nameElem = document.createElement("p");
+    nameElem.appendChild(document.createTextNode(names[data.user] + ": "));
+
+    var contentElem = document.createElement("p");
+    contentElem.appendChild(document.createTextNode(data.message));
+
+    msgElem.appendChild(nameElem);
+    msgElem.appendChild(contentElem);
+
+    // msgElem.appendChild(
+    //   document.createTextNode(userName + ": " + data.message)
+    // );
+    parentElem.appendChild(msgElem);
+    parentElem.scrollTop = parentElem.scrollHeight;
+
     // ^ Filling the chat with the message that was recieved
   });
 
@@ -219,7 +250,8 @@ document.addEventListener("DOMContentLoaded", function () {
     teamMembers[data.user] = data.team;
   });
 
-  tiles = this.getElementsByClassName("tile");
+  // Makes tiles on the gameboard clickable
+  tiles = document.getElementsByClassName("tile");
 
   for (let i = 0; i < tiles.length; i++) {
     tiles[i].addEventListener("click", tileClicked);
