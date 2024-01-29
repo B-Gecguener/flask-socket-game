@@ -132,7 +132,7 @@ input[type="submit"] {
   width: 300px;
   flex-shrink: 0;
 }
-#game {
+#game-board {
   max-height: 100%;
   width: auto;
   aspect-ratio: 1 / 1;
@@ -151,13 +151,24 @@ input[type="submit"] {
 .tile {
   width: 100%;
   height: 100%;
-  background-size: contain;
+  background-size: 30%;
+  background-repeat: no-repeat;
+  background-position: center;
+  transition: background-size 70ms cubic-bezier(0.15, 0.3, 0.7, 1.4);
 }
 .cross {
-  background-image: url("/static/img/bg-cross.png");
+  background-image: url("/static/img/cross.png");
+  background-size: 100%;
 }
 .circle {
-  background-image: url("/static/img/bg-circle.png");
+  background-image: url("/static/img/circle.png");
+  background-size: 100%;
+}
+.empty {
+  cursor: pointer;
+}
+.empty:hover {
+  background-image: url("/static/img/hover.png");
 }
 #tile-02 {
   border-right: solid 2px #e0e0e0;
@@ -181,6 +192,9 @@ input[type="submit"] {
 #tile-08 {
   border-right: solid 2px #e0e0e0;
   border-left: solid 2px #e0e0e0;
+}
+
+#stats {
 }
 #bg-container {
   position: absolute;
@@ -210,49 +224,49 @@ input[type="submit"] {
 .bg-01 {
   margin-left: 13%;
   top: 140px;
-  background-image: url("/static/img/bg-circle.png");
+  background-image: url("/static/img/circle.png");
 }
 .bg-02 {
   margin-left: 40%;
   top: 130px;
-  background-image: url("/static/img/bg-cross.png");
+  background-image: url("/static/img/cross.png");
   transform: rotate(-20deg);
 }
 .bg-03 {
   margin-left: 72%;
   top: 80px;
-  background-image: url("/static/img/bg-circle.png");
+  background-image: url("/static/img/circle.png");
 }
 .bg-04 {
   margin-left: 7%;
   top: 430px;
-  background-image: url("/static/img/bg-cross.png");
+  background-image: url("/static/img/cross.png");
   transform: rotate(-70deg);
 }
 .bg-05 {
   margin-left: 42%;
   top: 415px;
-  background-image: url("/static/img/bg-circle.png");
+  background-image: url("/static/img/circle.png");
 }
 .bg-06 {
   margin-left: 74%;
   top: 478px;
-  background-image: url("/static/img/bg-cross.png");
+  background-image: url("/static/img/cross.png");
   transform: rotate(-33deg);
 }
 .bg-07 {
   margin-left: 9%;
   top: 774px;
-  background-image: url("/static/img/bg-circle.png");
+  background-image: url("/static/img/circle.png");
 }
 .bg-08 {
   margin-left: 46%;
   top: 738px;
-  background-image: url("/static/img/bg-cross.png");
+  background-image: url("/static/img/cross.png");
   transform: rotate(35deg);
 }
 .bg-09 {
   margin-left: 75%;
   top: 813px;
-  background-image: url("/static/img/bg-circle.png");
+  background-image: url("/static/img/circle.png");
 }

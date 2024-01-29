@@ -18,6 +18,7 @@ let team = "X";
 let names = {};
 let teamMembers = {};
 let myName = name;
+let tiles = [];
 
 //--On-Load Wrapper
 document.addEventListener("DOMContentLoaded", function () {
@@ -142,7 +143,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  //--Turn Decition
+  //--Turn Decision
   //These (chaotic hell of) functions decides who begins
   function rollForTurn() {
     var roll = Math.random();
@@ -218,5 +219,24 @@ document.addEventListener("DOMContentLoaded", function () {
     teamMembers[data.user] = data.team;
   });
 
+  tiles = this.getElementsByClassName("tile");
+
+  for (let i = 0; i < tiles.length; i++) {
+    tiles[i].addEventListener("click", tileClicked);
+  }
+
+  function tileClicked(e) {
+    cl = e.target.classList;
+    if (cl.contains("empty")) {
+      if (team == "X") {
+        cl.remove("empty");
+        cl.add("cross");
+      }
+      if (team == "O") {
+        cl.remove("empty");
+        cl.add("circle");
+      }
+    }
+  }
   //Keep code within this wrapper!
 });
