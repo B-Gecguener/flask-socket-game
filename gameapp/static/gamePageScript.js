@@ -4,7 +4,6 @@ let socketPrefix = "[socket]: ";
 //Ready Boolean
 let ready = false;
 let opponentReady = false;
-
 //TurnBoolean, if true, its clients turn
 let turn = null;
 
@@ -13,17 +12,38 @@ let ourRoll = null;
 let otherRoll = null;
 
 //TeamID of client
-let team = 1;
+let team = "X";
 
 //Name List
 let names = {};
-let myName = "Anonymos";
+let teamMembers = {};
+let myName = name;
+let tiles = [];
 
 //--On-Load Wrapper
 document.addEventListener("DOMContentLoaded", function () {
   //This wrapper-function ensures, that the websocket connects after the whole document was loaded
   const socket = io.connect();
   connectToRoom(room);
+
+  //--Stats
+  //These are the html elements and their respective classes
+  //that should be changed depending on the game state:
+
+  let statsSelf = document.getElementById("stats-self");
+  let statsOpponent = document.getElementById("stats-opponent");
+
+  //"turn-indicator" depending on which turn it is
+  let labelSelfElem = statsSelf.children[0];
+  let labelOpponentElem = statsOpponent.children[0];
+
+  //"red" "green" depending on which team it is
+  let nameSelfElem = statsSelf.children[1];
+  let nameOpponentElem = statsOpponent.children[1];
+
+  //depending on how many wins a player has
+  let scoreSelfElem = statsSelf.children[2];
+  let scoreOpponentElem = statsOpponent.children[2];
 
   //--HTML Elenments and Eventlisteners
   document.getElementById("ping-room").addEventListener("click", pingRoom);
@@ -37,6 +57,7 @@ document.addEventListener("DOMContentLoaded", function () {
   document
     .getElementById("ready-button")
     .addEventListener("click", toggleReady);
+  document.getElementById("team-toggle").addEventListener("click", toggleTeam);
 
   //--Connect to room
   function connectToRoom(room) {
@@ -51,22 +72,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
   //--Names
   socket.on("get_name", function (data) {
+    console.log(socketPrefix + "our name was requested!");
     socket.emit("my_name", {
       name: myName,
       for: data.for,
-      toUser: data.toUser,
     });
     //answer server with my name
   });
   socket.on("lobby_names", function (data) {
     names[data["user-sid"]] = data.name;
+    console.log(socketPrefix + "recived name: " + names[data["user-sid"]]);
     //insert new user and name or update users name
   });
 
   //--Ping to room
   //Send a Ping to everybody in the room
   function pingRoom() {
-    team = 2;
     socket.emit("ping_to_server", room);
     // ^ Ask server to send ping to your room
   }
@@ -87,12 +108,40 @@ document.addEventListener("DOMContentLoaded", function () {
   }
   //Listen for chatmessages
   socket.on("chat_message", function (data) {
-    console.log(socketPrefix + "Recived Message from server: " + data);
-    var ul = document.getElementById("chat");
-    var li = document.createElement("li");
-    var userName = names[data.user] + "";
-    li.appendChild(document.createTextNode(userName + ": " + data.message));
-    ul.appendChild(li);
+    console.log(socketPrefix + "Recived Message from server: " + data.message);
+    var parentElem = document.getElementById("messages");
+    var msgElem = document.createElement("div");
+    var nameElem = document.createElement("p");
+    var grdBottom = document.getElementById("grd-bottom");
+    nameElem.appendChild(document.createTextNode(names[data.user] + ": "));
+
+    var contentElem = document.createElement("p");
+    contentElem.appendChild(document.createTextNode(data.message));
+
+    msgElem.appendChild(nameElem);
+    msgElem.appendChild(contentElem);
+
+    // msgElem.appendChild(
+    //   document.createTextNode(userName + ": " + data.message)
+    // );
+    parentElem.appendChild(msgElem);
+    parentElem.scrollTop = parentElem.scrollHeight;
+
+    parentElem.addEventListener("scroll", (event) => {
+      let oH = event.target.offsetHeight;
+      let sT = event.target.scrollTop;
+      let sH = event.target.scrollHeight;
+      console.log("offsetHeight: " + oH);
+      console.log("scrollTop: " + sT);
+      console.log("scrollHeight: " + sH);
+      let scrollBottom = sH - sT - oH;
+      if (scrollBottom == 0) {
+        grdBottom.classList.add("hidden");
+      } else {
+        grdBottom.classList.remove("hidden");
+      }
+    });
+
     // ^ Filling the chat with the message that was recieved
   });
 
@@ -102,17 +151,12 @@ document.addEventListener("DOMContentLoaded", function () {
   //Toggle between ready and unready
   function toggleReady() {
     if (ready) {
-      console.log(socketPrefix + "We aren't Ready!");
-      ready = false;
-      document.getElementById("ready-button").firstChild.data =
-        "Status: Not Ready";
+      socket.emit("make_ready", { team: team, room: room, status: "false" });
+      console.log(socketPrefix + "Sending ready-status: false");
     } else {
-      console.log(socketPrefix + "We are Ready!");
-      ready = true;
-      document.getElementById("ready-button").firstChild.data = "Status: Ready";
+      socket.emit("make_ready", { team: team, room: room, status: "true" });
+      console.log(socketPrefix + "Sending ready-status: true");
     }
-    socket.emit("make_ready", { team: team, room: room, status: ready });
-    console.log(socketPrefix + "Sending ready-status: " + ready);
   }
   socket.on("make_ready", function (data) {
     if (data.team != team) {
@@ -131,9 +175,22 @@ document.addEventListener("DOMContentLoaded", function () {
         start();
       }
     }
+    if (data.team == team) {
+      if (ready) {
+        console.log(socketPrefix + "We aren't Ready!");
+        ready = false;
+        document.getElementById("ready-button").firstChild.data =
+          "Status: Not Ready";
+      } else {
+        console.log(socketPrefix + "We are Ready!");
+        ready = true;
+        document.getElementById("ready-button").firstChild.data =
+          "Status: Ready";
+      }
+    }
   });
 
-  //--Turn Decition
+  //--Turn Decision
   //These (chaotic hell of) functions decides who begins
   function rollForTurn() {
     var roll = Math.random();
@@ -181,4 +238,53 @@ document.addEventListener("DOMContentLoaded", function () {
   function supposeMove(gamechanges) {
     socket.broadcast.emit("sup_move", { move: gamechanges, room: room });
   }
+
+  //--Choose Team
+  //Toggles the Team and informs other Clients
+  function toggleTeam() {
+    if (team == "X") {
+      team = "O";
+      console.log(socketPrefix + "Switching to Team O");
+      socket.emit("switch_team", { team: "O", room: room });
+      document.getElementById("team-toggle").firstChild.data = "O Team";
+    } else {
+      team = "X";
+      console.log(socketPrefix + "Switching to team X");
+      socket.emit("switch_team", { team: "X", room: room });
+      document.getElementById("team-toggle").firstChild.data = "X Team";
+    }
+  }
+  socket.on("switch_team", function (data) {
+    console.log(
+      socketPrefix +
+        "'" +
+        names[data.user] +
+        "' is now in Team '" +
+        data.team +
+        "'"
+    );
+    teamMembers[data.user] = data.team;
+  });
+
+  // Makes tiles on the gameboard clickable
+  tiles = document.getElementsByClassName("tile");
+
+  for (let i = 0; i < tiles.length; i++) {
+    tiles[i].addEventListener("click", tileClicked);
+  }
+
+  function tileClicked(e) {
+    cl = e.target.classList;
+    if (cl.contains("empty")) {
+      if (team == "X") {
+        cl.remove("empty");
+        cl.add("cross");
+      }
+      if (team == "O") {
+        cl.remove("empty");
+        cl.add("circle");
+      }
+    }
+  }
+  //Keep code within this wrapper!
 });

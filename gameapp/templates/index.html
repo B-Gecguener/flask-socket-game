@@ -1,51 +1,43 @@
-{% extends 'base.html' %}
-
-{% block title %}
-Tic Tac Toe
-{% endblock %}
-
-{% block imports %}
-
-{%endblock %}
-{% block content %}
+{% extends 'base.html' %} {% block title %} Tic Tac Toe {% endblock %} {% block
+imports %} {%endblock %} {% block content %}
 
 <body>
   <div id="logo-container">
-    <img src="/static/img/logo-ttt.png" alt="logo">
+    <img src="/static/img/logo-ttt.png" alt="logo" />
   </div>
-  <div id="welcome-container">
-    <div class="welcome">
-      <h1>Hello!</h1>
-      <p>Wanna play Tic Tac Toe? <br> Join a lobby or create one and share it with friends.</p>
-      <form action="/" method="post">
-        <div class="text-input-container">
-          <label for="name">Nickname</label>
-          <input type="text" id="name" name="name" required minlength="1" maxlength="16" />
-        </div>
-        <div class="text-input-container">
-          <label for="room">Room</label>
-          <input type="text" id="room" name="room" required minlength="1" maxlength="16" />
-        </div>
-        <!-- <button id="join-btn" class="filled">Join</button>
+  <div class="welcome round-box">
+    <h1>Hello!</h1>
+    <p>
+      Wanna play Tic Tac Toe? <br />
+      Join a lobby or create one and share it with friends.
+    </p>
+    <form action="/" method="post">
+      <div class="text-input-container">
+        <label for="name">Nickname</label>
+        <input type="text" id="name" name="name" required minlength="1" maxlength="16" />
+      </div>
+      <div class="text-input-container">
+        <label for="room">Room</label>
+        <input type="text" id="room" name="room" maxlength="16" />
+      </div>
+      <!-- <button id="join-btn" class="filled">Join</button>
         <button id="create-btn" class="outline">Create</button> -->
-        <input class="filled" type="submit" name="join" value="Join">
-        <input class="outline" type="submit" name="create" value="Create">
-      </form>
-      <small>Want to keep your name? <a href="">Create an account</a></small>
-    </div>
+      <input class="filled" type="submit" name="join" value="Join" />
+      <input class="outline" type="submit" name="create" value="Create" />
+    </form>
+    <small>Want to keep your name? <a href="">Create an account</a></small>
   </div>
   <div id="bg-container">
     <div class="bg">
-      <div class="bg-item count-01"></div>
-      <div class="bg-item count-02"></div>
-      <div class="bg-item count-03"></div>
-      <div class="bg-item count-04"></div>
-      <div class="bg-item count-05"></div>
-      <div class="bg-item count-06"></div>
-      <div class="bg-item count-07"></div>
-      <div class="bg-item count-08"></div>
-      <div class="bg-item count-09"></div>
-
+      <div class="bg-item bg-01"></div>
+      <div class="bg-item bg-02"></div>
+      <div class="bg-item bg-03"></div>
+      <div class="bg-item bg-04"></div>
+      <div class="bg-item bg-05"></div>
+      <div class="bg-item bg-06"></div>
+      <div class="bg-item bg-07"></div>
+      <div class="bg-item bg-08"></div>
+      <div class="bg-item bg-09"></div>
     </div>
   </div>
   <script src="/static/landingPageScript.js"></script>

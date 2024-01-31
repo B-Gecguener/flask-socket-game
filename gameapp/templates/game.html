@@ -1,23 +1,72 @@
-{% extends 'base.html' %}
-
-{% block title %}Tic Tac Toe{% endblock %}
-
-{% block imports %}
+{% extends 'base.html' %} {% block title %}Tic Tac Toe{% endblock %} {% block
+imports %}
 <script src="https://cdn.socket.io/4.1.2/socket.io.min.js"></script>
-{% endblock %}
-
-{% block content %}
+{% endblock %} {% block content %}
 <script>
   var room = "{{room}}";
   var name = "{{name}}";
 </script>
 <script src="/static/gamePageScript.js"></script>
+<div id="logo-container">
+  <img src="/static/img/logo-ttt.png" alt="logo" />
+</div>
+<main>
+  <div class="game-container round-box">
+    <div id="game-board" class="">
+      <div class="tile-row">
+        <div class="tile empty" id="tile-01"></div>
+        <div class="tile empty" id="tile-02"></div>
+        <div class="tile empty" id="tile-03"></div>
+      </div>
+      <div class="tile-row">
+        <div class="tile empty" id="tile-04"></div>
+        <div class="tile empty" id="tile-05"></div>
+        <div class="tile empty" id="tile-06"></div>
+      </div>
+      <div class="tile-row">
+        <div class="tile empty" id="tile-07"></div>
+        <div class="tile empty" id="tile-08"></div>
+        <div class="tile empty" id="tile-09"></div>
+      </div>
+    </div>
+    <h1 id="game-text" class="hidden">
+      Are you ready?
+    </h1>
+    <button id="ready-button" class="filled hidden">Status: Not Ready</button>
+  </div>
+  <div class="side">
+    <div id="stats" class="round-box">
+      <div class="room">
+        <small>Room:</small>
+        <h2>{{room}}</h2>
+      </div>
+      <div class="players">
+        <div class="player-column" id="stats-self">
+          <small class="turn-indicator">You:</small>
+          <p class="red">{{name}}</p>
+          <h1>0</h1>
+        </div>
+        <div class="player-column" id="stats-opponent">
+          <small>Opponent:</small>
+          <p class="green">Empty</p>
+          <h1>0</h1>
+        </div>
+      </div>
+    </div>
+    <div id="chat" class="round-box">
+      <div class="gradient" id="grd-top"></div>
+      <div class="gradient hidden" id="grd-bottom"></div>
+      <input type="text" id="message" placeholder="Message..." />
+      <div id="messages">
+      </div>
+    </div>
+  </div>
+</main>
 <h1>Welcome to the Game, {{name}}!</h1>
-<button id="ping-room">Ping!</button>
+<button id="ping-room" class="filled">Ping!</button>
 <h2>current room: {{room}}</h2>
-<button id="ready-button">Status: Not Ready</button>
 <p id="opponent-ready-status">Opponent: Not Ready</p>
-<p>Say hello to chat:</p>
-<input type="text" id="message" placeholder="Enter a Message" />
-<ul id="chat"></ul>
+<button id="team-toggle" class="filled">X Team</button>
+<div id="bg-container">
+</div>
 {% endblock %}
