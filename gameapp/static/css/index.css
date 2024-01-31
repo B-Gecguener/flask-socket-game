@@ -1,0 +1,32 @@
+.welcome {
+  margin: 64px auto 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+  max-width: 364px;
+}
+.welcome form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.welcome > * {
+  margin: 0;
+  width: 100%;
+}
+
+.welcome .text-input-container {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  flex-direction: column;
+}
+.welcome label {
+  font-weight: 600;
+}
+
+.welcome a {
+  font-weight: 600;
+  color: inherit;
+}
