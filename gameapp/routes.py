@@ -26,3 +26,6 @@ def createLobbyLink():
     random_string = ''.join(random.choice(characters) for i in range(8))
     return random_string
 
+@app.route("/profile")
+def profile():
+    return render_template("profile.html")
