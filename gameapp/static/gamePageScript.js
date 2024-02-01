@@ -298,5 +298,26 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
   }
+  let shareButton = document.getElementById("share-button");
+  shareButton.addEventListener("click", shareClicked);
+
+  function shareClicked() {
+    let link = removeLastDirectoryPartOf(window.location.href);
+
+    navigator.clipboard.writeText(link);
+    console.log("copied link: " + link);
+    shareButton.children[0].classList.remove("share-icon");
+    shareButton.children[0].classList.add("check-icon");
+    setTimeout(() => {
+      shareButton.children[0].classList.remove("check-icon");
+      shareButton.children[0].classList.add("share-icon");
+    }, 1000);
+  }
+
+  function removeLastDirectoryPartOf(url) {
+    var the_arr = url.split("/");
+    the_arr.pop();
+    return the_arr.join("/");
+  }
   //Keep code within this wrapper!
 });

@@ -5,6 +5,9 @@
 {%endblock %}
 
 {% block content %}
+<script>
+  var room = "{{room}}";
+</script>
 <div class="welcome round-box">
   <h1>Hello!</h1>
   <p>
@@ -13,12 +16,12 @@
   </p>
   <form action="/" method="post">
     <div class="text-input-container">
-      <label for="name">Nickname</label>
-      <input type="text" id="name" name="name" required minlength="1" maxlength="16" />
+      <label for="name-input">Nickname</label>
+      <input type="text" id="name-input" name="name" required minlength="1" maxlength="16" />
     </div>
     <div class="text-input-container">
-      <label for="room">Room</label>
-      <input type="text" id="room" name="room" maxlength="16" />
+      <label for="room-input">Room</label>
+      <input type="text" id="room-input" name="room" maxlength="16" />
     </div>
     <!-- <button id="join-btn" class="filled">Join</button>
         <button id="create-btn" class="outline">Create</button> -->

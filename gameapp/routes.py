@@ -17,6 +17,10 @@ def index():
     else:
         return render_template("index.html")
 
+@app.route("/game/<lobbyID>")
+def index_with_lobby(lobbyID):
+    return render_template("index.html", room = lobbyID)
+
 @app.route("/game/<lobbyID>/<name>")
 def game(lobbyID, name):
     return render_template("game.html", room = lobbyID, name = name)
@@ -29,3 +33,5 @@ def createLobbyLink():
 @app.route("/profile")
 def profile():
     return render_template("profile.html")
+
+
