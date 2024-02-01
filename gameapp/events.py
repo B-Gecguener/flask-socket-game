@@ -162,21 +162,17 @@ def addAndConnectPlayer(data):
   room = rooms[data["room"]]
   if room.player1 == None:
     room.player1 = Player(data["name"], request.sid, team)
-    me = room.player1
+    player = room.player1
+    if room.player2 != None:
+      oppondent = room.player2
   else:
     room.player2 = Player(data["name"], request.sid, team)
-    me = room.player2
-  # me = data["room"]].player1.name
-
-  print(me.name)
-
-
-  # rooms[data["room"]].addPlayer(Player(data["name"], request.sid, team))
-
+    player = room.player2
+    oppondent = room.player1
   # ^ add client to room
-  join_room(data["room"], sid = request.sid)
+  join_room(room, sid = request.sid)
   # ^ move client into room
-  print(prefix+"successfully conneced client '"+request.sid+"' to room '"+data["room"]+"'")
+  print(prefix+"successfully connected client '"+request.sid+"' to room '"+data["room"]+"'")
   io.emit("initialize_player", {"user-sid": request.sid, "name": data["name"], "team": team}, to=data["room"])
   io.emit("initialize_player", rooms[data["room"]].getOpponentName(request.sid) ,to=request.sid)
   io.emit("connected_to_room", to=request.sid)
