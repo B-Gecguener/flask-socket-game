@@ -70,6 +70,10 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  socket.on("lobby_full", function () {
+    console.log(socketPrefix + "room is full");
+  });
+
   //--Names
   socket.on("get_name", function (data) {
     console.log(socketPrefix + "our name was requested!");
@@ -79,11 +83,20 @@ document.addEventListener("DOMContentLoaded", function () {
     });
     //answer server with my name
   });
-  socket.on("name", function (data) {
-    var newName = data.name + "";
-    names[data["user-sid"]] = newName;
-    if (data.name != myName) nameOpponentElem.firstChild.data = newName;
-    console.log(socketPrefix + "recived name: " + names[data["user-sid"]]);
+  socket.on("initialize_player", function (data) {
+    if (!data) {
+      console.log(socketPrefix + "your are alone");
+    } else {
+      var newName = data.name + "";
+      names[data["user-sid"]] = newName;
+      if (socket.id != data["user-sid"]) {
+        nameOpponentElem.firstChild.data = newName;
+      } else {
+        console.log(socketPrefix + "own name detected");
+      }
+
+      console.log(socketPrefix + "recived name: " + names[data["user-sid"]]);
+    }
     //insert new user and name or update users name
   });
 
