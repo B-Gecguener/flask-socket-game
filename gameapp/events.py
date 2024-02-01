@@ -138,10 +138,11 @@ class Room:
 @io.on("connect_me")
 # ^ request for connection to given room by the client
 def connect_client_to_room(data):
-  if data["room"] in rooms.keys():
+  room = data["room"]
+  if room in rooms.keys():
     # ^ if the Lobby exists ...
-    print( prefix + "User: '"+request.sid + "' wants to connect to Room: '"+data["room"]+"'" )
-    if not rooms[data["room"]].openSpace():
+    print( prefix + "User: '"+request.sid + "' wants to connect to Room: '"+room+"'" )
+    if not rooms[room].openSpace():
       #Lobby is full, inform client
       io.emit("lobby_full", to=request.sid)
       print( prefix + "Connection not possible, room already full")
@@ -149,7 +150,7 @@ def connect_client_to_room(data):
       #Add Client to room
       addAndConnectPlayer(data)
   else: 
-    rooms[data["room"]] = Room()
+    rooms[room] = Room()
     # ^ create a new room
     print(prefix+"Creating new room")
     addAndConnectPlayer(data)
@@ -159,23 +160,35 @@ def connect_client_to_room(data):
 def addAndConnectPlayer(data):
   # Handles connection of a Client
   team = rooms[data["room"]].getUnusedTeam()
-  room = rooms[data["room"]]
-  if room.player1 == None:
-    room.player1 = Player(data["name"], request.sid, team)
-    player = room.player1
-    if room.player2 != None:
-      oppondent = room.player2
+  room = data["room"]
+  roomObj = rooms[data["room"]]
+  opponent = None
+  if roomObj.player1 == None:
+    roomObj.player1 = Player(data["name"], request.sid, team)
+    player = roomObj.player1
+    # if roomObj.player2 != None:
+    #   opponent = roomObj.player2
   else:
-    room.player2 = Player(data["name"], request.sid, team)
-    player = room.player2
-    oppondent = room.player1
+    roomObj.player2 = Player(data["name"], request.sid, team)
+    player = roomObj.player2
+    opponent = roomObj.player1
   # ^ add client to room
   join_room(room, sid = request.sid)
+  io.emit("connected_to_room", to=player.sid)
   # ^ move client into room
   print(prefix+"successfully connected client '"+request.sid+"' to room '"+data["room"]+"'")
-  io.emit("initialize_player", {"user-sid": request.sid, "name": data["name"], "team": team}, to=data["room"])
-  io.emit("initialize_player", rooms[data["room"]].getOpponentName(request.sid) ,to=request.sid)
-  io.emit("connected_to_room", to=request.sid)
+  outgoing = None
+  if opponent != None:
+     outgoing = {"player": {"sid": player.sid, "name": player.name, "team": player.team}, "opponent": {"sid": opponent.sid, "name": opponent.name, "team": opponent.team}}
+     io.emit("initialize_player", outgoing, to=player.sid)
+     outgoing = {"opponent": {"sid": player.sid, "name": player.name, "team": player.team}}
+     io.emit("initialize_player", outgoing, to=opponent.sid)
+  else:
+     outgoing = {"player": {"sid": player.sid, "name": player.name, "team": player.team}}
+     io.emit("initialize_player", outgoing, to=player.sid)
+
+  # io.emit("initialize_player", {"user-sid": request.sid, "name": data["name"], "team": team}, to=data["room"])
+  # io.emit("initialize_player", rooms[data["room"]].getOpponentName(request.sid) ,to=request.sid)
   # ^ inform client about connection
 
 # PREGAME FUNCTIONS
@@ -232,6 +245,7 @@ def ping(room):
 
 @io.on("chat_message")
 def handle_chat_message(data):
-  io.emit("chat_message", {"message": data["message"], "user": request.sid}, to=data["room"])
+  room = data["room"]
+  io.emit("chat_message", {"message": data["message"], "name": data["name"]}, to=room)
   # ^ send message from client back to all others in clients room
-  print(prefix + "Deliver message '" + data["message"] + "' to room '" + data["room"] + "'")
+  print(prefix + "Deliver message '" + data["message"] + "' to room '" + room + "'")

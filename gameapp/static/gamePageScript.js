@@ -16,10 +16,10 @@ let team = "X";
 
 //Name List
 let names = {};
-let teamMembers = {};
 let myName = name;
 let tiles = [];
-
+let player = null;
+let opponent = null;
 //--On-Load Wrapper
 document.addEventListener("DOMContentLoaded", function () {
   //This wrapper-function ensures, that the websocket connects after the whole document was loaded
@@ -30,20 +30,20 @@ document.addEventListener("DOMContentLoaded", function () {
   //These are the html elements and their respective classes
   //that should be changed depending on the game state:
 
-  let statsSelf = document.getElementById("stats-self");
-  let statsOpponent = document.getElementById("stats-opponent");
+  let statsPlayerElem = document.getElementById("stats-player");
+  let statsOpponentElem = document.getElementById("stats-opponent");
 
   //"turn-indicator" depending on which turn it is
-  let labelSelfElem = statsSelf.children[0];
-  let labelOpponentElem = statsOpponent.children[0];
+  let labelPlayerElem = statsPlayerElem.children[0];
+  let labelOpponentElem = statsOpponentElem.children[0];
 
   //"red" "green" depending on which team it is
-  let nameSelfElem = statsSelf.children[1];
-  let nameOpponentElem = statsOpponent.children[1];
+  let namePlayerElem = statsPlayerElem.children[1];
+  let nameOpponentElem = statsOpponentElem.children[1];
 
   //depending on how many wins a player has
-  let scoreSelfElem = statsSelf.children[2];
-  let scoreOpponentElem = statsOpponent.children[2];
+  let scorePlayerElem = statsPlayerElem.children[2];
+  let scoreOpponentElem = statsOpponentElem.children[2];
 
   //--HTML Elenments and Eventlisteners
   document.getElementById("ping-room").addEventListener("click", pingRoom);
@@ -65,10 +65,11 @@ document.addEventListener("DOMContentLoaded", function () {
     //Moves the client into a socket.io room, which is later used to broadcast the gamechanges to all clients in this lobby / room
     socket.emit("connect_me", { room: room, name: myName });
     console.log(socketPrefix + "asking for connection on " + room);
-    socket.on("connected_to_room", function () {
-      console.log(socketPrefix + "successfully connected to " + room + "!");
-    });
   }
+
+  socket.on("connected_to_room", function () {
+    console.log(socketPrefix + "successfully connected to " + room + "!");
+  });
 
   socket.on("lobby_full", function () {
     console.log(socketPrefix + "room is full");
@@ -84,22 +85,27 @@ document.addEventListener("DOMContentLoaded", function () {
     //answer server with my name
   });
   socket.on("initialize_player", function (data) {
-    if (!data) {
-      console.log(socketPrefix + "your are alone");
-    } else {
-      var newName = data.name + "";
-      names[data["user-sid"]] = newName;
-      if (socket.id != data["user-sid"]) {
-        nameOpponentElem.firstChild.data = newName;
-      } else {
-        console.log(socketPrefix + "own name detected");
-      }
-
-      console.log(socketPrefix + "recived name: " + names[data["user-sid"]]);
+    console.log("initialize a player");
+    if ("opponent" in data) {
+      opponent = data.opponent;
+      console.log(socketPrefix + "My Opponent is " + opponent.name);
     }
-    //insert new user and name or update users name
+    if ("player" in data) {
+      player = data.player;
+      console.log(socketPrefix + "I'm: " + player.name);
+    }
+    displayNames();
   });
-
+  function displayNames() {
+    // let namePlayerNode = document.createTextNode(player.name);
+    namePlayerElem.innerText = player.name;
+    if (opponent != null) {
+      statsOpponentElem.classList.remove("hidden");
+      // let nameOpponentNode = document.createTextNode(opponent.name);
+      // nameOpponentElem.appendChild(nameOpponentNode);
+      nameOpponentElem.innerText = opponent.name;
+    }
+  }
   //--Ping to room
   //Send a Ping to everybody in the room
   function pingRoom() {
@@ -116,19 +122,31 @@ document.addEventListener("DOMContentLoaded", function () {
     //This sends the provided string as a message to the lobbys chat
     let message = document.getElementById("message").value;
     // ^ get the message string out of the input line
-    socket.emit("chat_message", { message: message, room: room });
+    socket.emit("chat_message", {
+      message: message,
+      name: player.name,
+      room: room,
+    });
     // ^ send message to the room, the socket is in
     document.getElementById("message").value = "";
-    console.log(socketPrefix + "Message send to server: " + message);
+    console.log(
+      socketPrefix + "Message send to room: " + room + " message:" + message
+    );
   }
   //Listen for chatmessages
   socket.on("chat_message", function (data) {
-    console.log(socketPrefix + "Recived Message from server: " + data.message);
+    console.log(
+      socketPrefix +
+        "Recived Message from server: " +
+        data.message +
+        "name: " +
+        data.name
+    );
     var parentElem = document.getElementById("messages");
     var msgElem = document.createElement("div");
     var nameElem = document.createElement("p");
     var grdBottom = document.getElementById("grd-bottom");
-    nameElem.appendChild(document.createTextNode(names[data.user] + ": "));
+    nameElem.appendChild(document.createTextNode(data.name + ": "));
 
     var contentElem = document.createElement("p");
     contentElem.appendChild(document.createTextNode(data.message));
@@ -146,9 +164,6 @@ document.addEventListener("DOMContentLoaded", function () {
       let oH = event.target.offsetHeight;
       let sT = event.target.scrollTop;
       let sH = event.target.scrollHeight;
-      console.log("offsetHeight: " + oH);
-      console.log("scrollTop: " + sT);
-      console.log("scrollHeight: " + sH);
       let scrollBottom = sH - sT - oH;
       if (scrollBottom == 0) {
         grdBottom.classList.add("hidden");
