@@ -56,8 +56,8 @@ class Room:
        if sid == self.player2.getSid():
           self.player2.setReady(status)
     
-    def bothReady(self):
-       return (self.player1.getReady() and self.player2.getReady())
+    def checkBothReady(self):
+       return (self.player1.ready and self.player2.ready)
           
     def getPlayer(self, i):
       if i == 1:
@@ -193,23 +193,22 @@ def addAndConnectPlayer(data):
 
 # PREGAME FUNCTIONS
 # --------------------------------------------------------------------------------------------
-@io.on("make_ready")
-def make_ready(data):
-  # This gets called when a client makes himself ready or un-ready
-  rooms[data["room"]].updateReadyStatus(request.sid, data["status"])
-  # ^ store information in room object
-  io.emit("make_ready", {"userSid": request.sid, "status": data["status"]}, to=data["room"])
-  # ^ this informs the room about clients new ready-status
-  print(prefix+"emitting room '"+data["room"]+"'s Team '"+str(data["team"])+"' ready-status is '"+str(data["status"])+"'")
-  if rooms[data["room"]].bothReady():
-     startGame(data["room"])
-     # ^ if both clients are ready, start game
+@io.on("ready")
+def set_player_ready(data):
+  room = data["room"]
+  sid = data["sid"]
+  roomObj = rooms[room]
 
+  if roomObj.player1.sid == sid:
+    roomObj.player1.ready = True
+
+  if roomObj.player2.sid == sid:
+    roomObj.player2.ready = True
+
+  if roomObj.checkBothReady():
+     io.emit("start_game", to=room)
 # GAME UPDATES AND SIGNALS
 # --------------------------------------------------------------------------------------------  
-def startGame(room):
-   print(prefix+"Gamestart in room '"+room+"'")
-   io.emit("start_game", to=room)
 
 @io.on("game_move")
 def handle_game_move(data):

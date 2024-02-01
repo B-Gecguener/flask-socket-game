@@ -45,19 +45,18 @@ document.addEventListener("DOMContentLoaded", function () {
   let scorePlayerElem = statsPlayerElem.children[2];
   let scoreOpponentElem = statsOpponentElem.children[2];
 
-  //--HTML Elenments and Eventlisteners
-  document.getElementById("ping-room").addEventListener("click", pingRoom);
-  document
-    .getElementById("message")
-    .addEventListener("keyup", function (event) {
-      if (event.key == "Enter") {
-        sendChatMessage();
-      }
-    });
-  document
-    .getElementById("ready-button")
-    .addEventListener("click", toggleReady);
-  document.getElementById("team-toggle").addEventListener("click", toggleTeam);
+  let messageElem = document.getElementById("message");
+
+  let gameBoardElem = document.getElementById("game-board");
+  let readyButtonElem = document.getElementById("ready-button");
+  let gameTextElem = document.getElementById("game-text");
+
+  readyButtonElem.addEventListener("click", readyUp);
+  messageElem.addEventListener("keyup", function (event) {
+    if (event.key == "Enter") {
+      sendChatMessage();
+    }
+  });
 
   //--Connect to room
   function connectToRoom(room) {
@@ -106,16 +105,6 @@ document.addEventListener("DOMContentLoaded", function () {
       nameOpponentElem.innerText = opponent.name;
     }
   }
-  //--Ping to room
-  //Send a Ping to everybody in the room
-  function pingRoom() {
-    socket.emit("ping_to_server", room);
-    // ^ Ask server to send ping to your room
-  }
-  //Listen for ping to your room
-  socket.on("ping_to_client", function () {
-    console.log(socketPrefix + "Pinged!");
-  });
 
   //--Chat
   function sendChatMessage() {
@@ -179,42 +168,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
   //--Toggle Ready
   //Toggle between ready and unready
-  function toggleReady() {
-    if (ready) {
-      socket.emit("make_ready", { team: team, room: room, status: "false" });
-      console.log(socketPrefix + "Sending ready-status: false");
-    } else {
-      socket.emit("make_ready", { team: team, room: room, status: "true" });
-      console.log(socketPrefix + "Sending ready-status: true");
-    }
+  function readyUp() {
+    socket.emit("ready", {
+      sid: player.sid,
+      room: room,
+    });
+    gameTextElem.innerText = "Waiting for opponent...";
+    readyButtonElem.classList.add("hidden");
+    console.log("ready up");
   }
-  socket.on("make_ready", function (data) {
-    if (names[data.userSid] != myName) {
-      console.log(
-        socketPrefix + "Opponent Teams ready-status is " + data.status
-      );
-      opponentReady = data.status;
-      if (opponentReady) {
-        document.getElementById("opponent-ready-status").innerText =
-          "Opponent: Ready";
-      } else {
-        document.getElementById("opponent-ready-status").innerText =
-          "Opponent: Not Ready";
-      }
-    }
-    if (names[data.userSid] == myName) {
-      if (data.status) {
-        console.log(socketPrefix + "We are Ready!");
-        ready = false;
-        document.getElementById("ready-button").firstChild.data =
-          "Status: Ready";
-      } else {
-        console.log(socketPrefix + "We aren't Ready!");
-        ready = false;
-        document.getElementById("ready-button").firstChild.data =
-          "Status: Not Ready";
-      }
-    }
+
+  socket.on("start_game", function (data) {
+    console.log("game started");
+    gameTextElem.classList.add("hidden");
+    readyButtonElem.classList.add("hidden");
+    gameBoardElem.classList.remove("hidden");
   });
 
   //--Turn Decision
