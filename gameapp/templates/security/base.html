@@ -8,13 +8,19 @@
     <title>{% block title %}{{ title|default }}{% endblock title %}</title>
 
       {%- block metas %}
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       {%- endblock metas %}
 
       {%- block head_scripts %}
       {%- endblock head_scripts %}
 
       {%- block styles %}
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Sometype+Mono&display=swap"
+        rel="stylesheet">
+      <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/default.css') }}" />
         <style>
           .fs-center { text-align: center }
           .fs-important { font-size: larger; font-weight: bold }
@@ -26,6 +32,9 @@
     {%- endblock head %}
   </head>
   <body{% block body_attribs %}{% endblock body_attribs %}>
+    <a id="logo-container" href="/">
+      <img src="/static/img/logo-ttt.png" alt="logo" />
+    </a>
     {% block body -%}
       {% block navbar %}
       {%- endblock navbar %}
@@ -34,8 +43,22 @@
 
       {% block scripts %}
       {%- endblock scripts %}
+      <div id="bg-container">
+        <div class="bg">
+          <div class="bg-item bg-01"></div>
+          <div class="bg-item bg-02"></div>
+          <div class="bg-item bg-03"></div>
+          <div class="bg-item bg-04"></div>
+          <div class="bg-item bg-05"></div>
+          <div class="bg-item bg-06"></div>
+          <div class="bg-item bg-07"></div>
+          <div class="bg-item bg-08"></div>
+          <div class="bg-item bg-09"></div>
+        </div>
+      </div>
     {%- endblock body %}
   </body>
   {%- endblock html %}
 </html>
 {% endblock doc -%}
+

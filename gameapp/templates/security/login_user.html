@@ -2,6 +2,8 @@
 {% from "security/_macros.html" import render_field_with_errors, render_field, render_field_errors, render_form_errors, prop_next %}
 
 {% block content %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/security.css') }}" />
+<div class="security round-box">
   {% include "security/_messages.html" %}
   <h1>{{ _fsdomain('Login') }}</h1>
   <form action="{{ url_for_security('login') }}{{ prop_next() }}" method="post" name="login_user_form">
@@ -38,7 +40,11 @@
           {% endif %}
         </form>
       </div>
-    {% endfor %}
-  {% endif %}
-  {% include "security/_menu.html" %}
+      {% endfor %}
+      {% endif %}
+      <small>No Account yet?
+        <a href="register">Register</a>
+      </small>
+  <!-- {% include "security/_menu.html" %} -->
+  </div>
 {% endblock content %}

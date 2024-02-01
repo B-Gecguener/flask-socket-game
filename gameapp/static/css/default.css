@@ -23,6 +23,7 @@ body {
   left: 16px; */
   max-width: 375px;
   width: 100%;
+  display:block;
 }
 #logo-container img {
   width: 100%;
@@ -46,11 +47,6 @@ button {
   color: white;
   border: 0;
 }
-.outline {
-  background: white;
-  color: #333;
-  border: 2px solid #333;
-}
 input[type="submit"] {
   width: 100%;
   border-radius: 32px;
@@ -61,8 +57,16 @@ input[type="submit"] {
   text-decoration: none;
   padding: 16px 24px;
   cursor: pointer;
+  background: #333;
+  color: white;
+  border: 0;
 }
-input[type="text"] {
+.outline {
+  background: white !important;
+  color: #333 !important;
+  border: 2px solid #333 !important;
+}
+input[type="text"], input[type="password"], input[type="email"] {
   box-sizing: border-box;
   font-family: inherit;
   font-size: 18px;
@@ -72,6 +76,7 @@ input[type="text"] {
   outline: none;
   padding: 12px;
   width: 100%;
+  margin-top: 12px;
 }
 .round-box {
   background-color: white;
@@ -85,9 +90,9 @@ main {
   display: flex;
   flex-direction: row;
   gap: 24px;
-  height: 636px;
-  margin: 64px auto 0 auto;
-  max-width: 960px;
+  height: 580px;
+  margin: 32px auto 0 auto;
+  max-width: 904px;
 }
 @media (max-width: 720px) {
   main {
