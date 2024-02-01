@@ -63,7 +63,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function connectToRoom(room) {
     //Call this apon connecting to the game room
     //Moves the client into a socket.io room, which is later used to broadcast the gamechanges to all clients in this lobby / room
-    socket.emit("connect_me", room);
+    socket.emit("connect_me", { room: room, name: myName });
     console.log(socketPrefix + "asking for connection on " + room);
     socket.on("connected_to_room", function () {
       console.log(socketPrefix + "successfully connected to " + room + "!");
@@ -79,8 +79,10 @@ document.addEventListener("DOMContentLoaded", function () {
     });
     //answer server with my name
   });
-  socket.on("lobby_names", function (data) {
-    names[data["user-sid"]] = data.name;
+  socket.on("name", function (data) {
+    var newName = data.name + "";
+    names[data["user-sid"]] = newName;
+    if (data.name != myName) nameOpponentElem.firstChild.data = newName;
     console.log(socketPrefix + "recived name: " + names[data["user-sid"]]);
     //insert new user and name or update users name
   });
@@ -159,7 +161,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
   socket.on("make_ready", function (data) {
-    if (data.team != team) {
+    if (names[data.userSid] != myName) {
       console.log(
         socketPrefix + "Opponent Teams ready-status is " + data.status
       );
@@ -171,21 +173,18 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("opponent-ready-status").innerText =
           "Opponent: Not Ready";
       }
-      if (ready && opponentReady) {
-        start();
-      }
     }
-    if (data.team == team) {
-      if (ready) {
+    if (names[data.userSid] == myName) {
+      if (data.status) {
+        console.log(socketPrefix + "We are Ready!");
+        ready = false;
+        document.getElementById("ready-button").firstChild.data =
+          "Status: Ready";
+      } else {
         console.log(socketPrefix + "We aren't Ready!");
         ready = false;
         document.getElementById("ready-button").firstChild.data =
           "Status: Not Ready";
-      } else {
-        console.log(socketPrefix + "We are Ready!");
-        ready = true;
-        document.getElementById("ready-button").firstChild.data =
-          "Status: Ready";
       }
     }
   });
