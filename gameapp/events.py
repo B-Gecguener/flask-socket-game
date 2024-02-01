@@ -1,6 +1,6 @@
 from flask import request
 from flask_socketio import SocketIO, emit, join_room
-
+import random
 io = SocketIO()
 
 prefix = "[io-Server]: "
@@ -17,7 +17,7 @@ class Player:
 class Room:
     def __init__(self):
         self.turn = None
-        self.grid = [None, None, None, None, None, None, None, None, None]
+        self.grid = ["", "", "", "", "", "", "", "", ""]
         self.playerX = None
         self.playerO = None
     
@@ -33,26 +33,30 @@ class Room:
         self.grid[updatePos] = teamSymbol
     
     def resetGrid(self):
-        self.grid = [None, None, None, None, None, None, None, None, None]
+        self.grid = ["", "", "", "", "", "", "", "", ""]
     
     def checkWinCondition(self):
         i = 0
-        while i < 10: 
+        while i < 9: 
+            if self.grid[i] == self.grid[i+1] == self.grid[i+2]:
+                if self.grid[i] != "":
+                    print("Won in horizontal line: " + str(i))
+                    return self.grid[i]
             i += 3
-            if self.grid[i] == self.grid[i+1] and self.grid[i+1] == self.grid[i+2]:
-                if self.grid[i] != "" or self.grid[i] != None:
-                    return self.grid[i]
         i = 0
-        while i < 4:
-            i+= 1
-            if self.grid[i] == self.grid[i+3] and self.grid[i+3] != self.grid[i+6]:
-                if self.grid[i] != "" or self.grid[i] == None:
+        while i < 3:
+            if self.grid[i] == self.grid[i+3] == self.grid[i+6]:
+                if self.grid[i] != "":
+                    print("Won in vertical line: " + str(i))
+                    
                     return self.grid[i]
+            i+= 1
+            
         if self.grid[0] == self.grid[4] and self.grid[4] == self.grid[8]:
-            if self.grid[0] != "" and self.grid[0] != None:
+            if self.grid[0] != "":
                 return self.grid[0]
         if self.grid[2] == self.grid[4] and self.grid[4] == self.grid[6]:
-            if self.grid[2] != "" and self.grid[2] != None:
+            if self.grid[2] != "":
                 return self.grid[2]
         return None
 
@@ -133,26 +137,50 @@ def set_player_ready(data):
     roomObj.playerO.ready = True
 
   if roomObj.checkBothReady():
-     io.emit("start_game", to=room)
+     if bool(random.getrandbits(1)):
+        roomObj.turn = "X"
+     else:
+         roomObj.turn = "O"
+
+     io.emit("start_game", roomObj.turn, to=room)
 # GAME UPDATES AND SIGNALS
 # --------------------------------------------------------------------------------------------  
 
 @io.on("game_move")
 def handle_game_move(data):
-  # Handle incomeing game move
-  if (rooms[data["room"]].getTurn() == data["team"]):
-    # ^ make sure move is submitted by turntaking client
-    rooms[data["room"]].updateGrid(data["gridPos"],data["team"])
-    # ^ update grid of the room
-    rooms[data["room"]].switchTurn()
-    # ^ switch Turns
-    gameUpdate(data, rooms[data["room"]].checkWinCondition())
-    # ^ pass winning team and update to the gameUpdate function
-    # if nobody winns, the checkWinCondition function returns None
+  print("game move recieved")
+  room =data["room"]
+  roomObj = rooms[room]
+  grid = data["grid"]
+  team = data["team"]
+  # Handle incoming game move
+  if (roomObj.turn == team):
+    print("it's the teams turn")
 
-def gameUpdate(data, winningTeam):
-  # Update the lobby with the current gamestate
-  io.emit("game_update", {"winning-team": winningTeam, "teams-turn": data["team"], "grid": rooms[data["room"]].getGrid()}, to=data["room"])
+    # ^ make sure move is submitted by turntaking client
+    roomObj.grid = grid
+    # ^ update grid of the room
+
+    # if nobody winns, the checkWinCondition function returns None
+    if roomObj.checkWinCondition() == None:
+      print("game is not won yet")
+
+      if team == "X":
+        recipient = roomObj.playerO.sid
+      if team == "O":
+        recipient = roomObj.playerX.sid
+      
+      roomObj.switchTurn()
+      io.emit("game_update", {"grid": grid}, to=recipient)
+    else:
+      print("game is won")
+      roomObj.playerO.ready = False
+      roomObj.playerX.ready = False
+
+      io.emit("win_update", {"grid": grid, "winner": roomObj.checkWinCondition()}, to=room)
+      roomObj.turn = None
+       
+
 
 # CHAT
 # --------------------------------------------------------------------------------------------    

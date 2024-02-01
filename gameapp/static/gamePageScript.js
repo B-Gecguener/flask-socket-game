@@ -4,9 +4,9 @@ let socketPrefix = "[socket]: ";
 //Ready Boolean
 //TurnBoolean, if true, its clients turn
 let isMyTurn = false;
-
+let grid = ["", "", "", "", "", "", "", "", ""];
 //Name List
-let tiles = [];
+let tileElems = [];
 let player = null;
 let opponent = null;
 //--On-Load Wrapper
@@ -39,6 +39,8 @@ document.addEventListener("DOMContentLoaded", function () {
   let gameBoardElem = document.getElementById("game-board");
   let readyButtonElem = document.getElementById("ready-button");
   let gameTextElem = document.getElementById("game-text");
+
+  let turnOverlayElem = document.getElementById("turn-overlay");
 
   readyButtonElem.addEventListener("click", readyUp);
   messageElem.addEventListener("keyup", function (event) {
@@ -150,34 +152,119 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("ready up");
   }
 
-  socket.on("start_game", function (data) {
+  socket.on("start_game", function (starter) {
+    if (player.team == starter) {
+      isMyTurn = true;
+      turnOverlayElem.classList.add("hidden");
+    }
+
     console.log("game started");
     gameTextElem.classList.add("hidden");
     readyButtonElem.classList.add("hidden");
     gameBoardElem.classList.remove("hidden");
   });
 
-  // Makes tiles on the gameboard clickable
-  tiles = document.getElementsByClassName("tile");
+  // Makes tileElems on the gameboard clickable
+  tileElems = [...document.getElementsByClassName("tile")];
 
-  for (let i = 0; i < tiles.length; i++) {
-    tiles[i].addEventListener("click", tileClicked);
+  for (let i = 0; i < tileElems.length; i++) {
+    tileElems[i].addEventListener("click", tileClicked);
   }
 
   function tileClicked(e) {
-    cl = e.target.classList;
-    if (cl.contains("empty")) {
-      if (player.team == "X") {
-        cl.remove("empty");
-        cl.add("cross");
+    console.log("clicked" + isMyTurn);
+    if (isMyTurn) {
+      console.log("clicked and its my turn");
+
+      cl = e.target.classList;
+      let index = tileElems.indexOf(e.target);
+
+      if (cl.contains("empty")) {
+        if (player.team == "X") {
+          cl.remove("empty");
+          cl.add("cross");
+          grid[index] = "X";
+        }
+        if (player.team == "O") {
+          cl.remove("empty");
+          cl.add("circle");
+          grid[index] = "O";
+        }
       }
-      if (player.team == "O") {
-        cl.remove("empty");
-        cl.add("circle");
-      }
+      socket.emit("game_move", {
+        grid: grid,
+        team: player.team,
+        room: room,
+      });
+      isMyTurn = false;
+      turnOverlayElem.classList.remove("hidden");
     }
   }
 
+  socket.on("game_update", function (data) {
+    grid = data.grid;
+    for (let i = 0; i < tileElems.length; i++) {
+      if (grid[i] == "X") {
+        tileElems[i].classList.remove("empty");
+        tileElems[i].classList.add("cross");
+      }
+      if (grid[i] == "O") {
+        tileElems[i].classList.remove("empty");
+        tileElems[i].classList.add("circle");
+      }
+    }
+    isMyTurn = true;
+    turnOverlayElem.classList.add("hidden");
+  });
+  socket.on("win_update", function (data) {
+    grid = data.grid;
+    winner = data.winner;
+    let hasWon = false;
+    console.log("winner:" + winner);
+    console.log("team:" + player.team);
+
+    if (winner == player.team) {
+      hasWon = true;
+    }
+
+    for (let i = 0; i < tileElems.length; i++) {
+      if (grid[i] == "X") {
+        tileElems[i].classList.remove("empty");
+        tileElems[i].classList.add("cross");
+      }
+      if (grid[i] == "O") {
+        tileElems[i].classList.remove("empty");
+        tileElems[i].classList.add("circle");
+      }
+    }
+
+    turnOverlayElem.classList.add("hidden");
+    console.log("game over");
+    setTimeout(() => {
+      showEndScreen(hasWon);
+    }, 2500);
+  });
+  function showEndScreen(hasWon) {
+    if (hasWon) {
+      gameTextElem.innerText = "You won! Wanna play again?";
+    } else {
+      gameTextElem.innerText = "You lost! Wanna play again?";
+    }
+    grid = ["", "", "", "", "", "", "", "", ""];
+    for (let i = 0; i < tileElems.length; i++) {
+      tileElems[i].classList.remove("empty");
+      tileElems[i].classList.remove("circle");
+      tileElems[i].classList.remove("cross");
+
+      tileElems[i].classList.add("empty");
+    }
+
+    turnOverlayElem.classList.remove("hidden");
+    gameTextElem.classList.remove("hidden");
+
+    readyButtonElem.classList.remove("hidden");
+    gameBoardElem.classList.add("hidden");
+  }
   //--Share
   let shareButton = document.getElementById("share-button");
   shareButton.addEventListener("click", shareClicked);
