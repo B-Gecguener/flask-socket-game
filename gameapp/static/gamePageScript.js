@@ -2,21 +2,10 @@
 let socketPrefix = "[socket]: ";
 //--Global Game Variables
 //Ready Boolean
-let ready = false;
-let opponentReady = false;
 //TurnBoolean, if true, its clients turn
-let turn = null;
-
-//Global save of rolls, to decide for turn
-let ourRoll = null;
-let otherRoll = null;
-
-//TeamID of client
-let team = "X";
+let isMyTurn = false;
 
 //Name List
-let names = {};
-let myName = name;
 let tiles = [];
 let player = null;
 let opponent = null;
@@ -62,7 +51,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function connectToRoom(room) {
     //Call this apon connecting to the game room
     //Moves the client into a socket.io room, which is later used to broadcast the gamechanges to all clients in this lobby / room
-    socket.emit("connect_me", { room: room, name: myName });
+    socket.emit("connect_me", { room: room, name: name });
     console.log(socketPrefix + "asking for connection on " + room);
   }
 
@@ -74,15 +63,6 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log(socketPrefix + "room is full");
   });
 
-  //--Names
-  socket.on("get_name", function (data) {
-    console.log(socketPrefix + "our name was requested!");
-    socket.emit("my_name", {
-      name: myName,
-      for: data.for,
-    });
-    //answer server with my name
-  });
   socket.on("initialize_player", function (data) {
     console.log("initialize a player");
     if ("opponent" in data) {
@@ -96,12 +76,9 @@ document.addEventListener("DOMContentLoaded", function () {
     displayNames();
   });
   function displayNames() {
-    // let namePlayerNode = document.createTextNode(player.name);
     namePlayerElem.innerText = player.name;
     if (opponent != null) {
       statsOpponentElem.classList.remove("hidden");
-      // let nameOpponentNode = document.createTextNode(opponent.name);
-      // nameOpponentElem.appendChild(nameOpponentNode);
       nameOpponentElem.innerText = opponent.name;
     }
   }
@@ -143,9 +120,6 @@ document.addEventListener("DOMContentLoaded", function () {
     msgElem.appendChild(nameElem);
     msgElem.appendChild(contentElem);
 
-    // msgElem.appendChild(
-    //   document.createTextNode(userName + ": " + data.message)
-    // );
     parentElem.appendChild(msgElem);
     parentElem.scrollTop = parentElem.scrollHeight;
 
@@ -165,8 +139,6 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   //--Game code
-
-  //--Toggle Ready
   //Toggle between ready and unready
   function readyUp() {
     socket.emit("ready", {
@@ -185,82 +157,6 @@ document.addEventListener("DOMContentLoaded", function () {
     gameBoardElem.classList.remove("hidden");
   });
 
-  //--Turn Decision
-  //These (chaotic hell of) functions decides who begins
-  function rollForTurn() {
-    var roll = Math.random();
-    console.log(socketPrefix + "Rolling for turn. Roll: " + roll);
-    ourRoll = roll;
-    socket.emit("roll_for_turn", { roll: roll, team: team, room: room });
-    // ^ send roll, teamID and room to the server, to send your teams roll to everybody else in your room
-  }
-  socket.on("roll_for_turn", function (data) {
-    if (data.team != team) {
-      otherRoll = data.roll;
-      console.log(socketPrefix + "Roll recieved!");
-      console.log(socketPrefix + "Opponent Roll: " + data.roll);
-    }
-    // ^ save your roll, and other teams roll
-    if (ourRoll != null && otherRoll != null) {
-      if (ourRoll > otherRoll) {
-        turn = true;
-        console.log(socketPrefix + "We start.");
-      } else if (ourRoll < otherRoll) {
-        turn = false;
-        console.log(socketPrefix + "We are second.");
-      } else {
-        console.log(socketPrefix + "Reroll needed.");
-        turn = null;
-        rerollTurn();
-      }
-      ourRoll = null;
-      otherRoll = null;
-    }
-    // ^ if both rolls are saved, decide which one is bigger, its that teams turn
-  });
-
-  //Reroll Turn, (if both rolls are the same or something went wrong)
-  function rerollTurn() {
-    rollForTurn();
-  }
-
-  function start() {
-    socket.emit("start_game", room);
-  }
-
-  socket.on("start", rollForTurn);
-
-  function supposeMove(gamechanges) {
-    socket.broadcast.emit("sup_move", { move: gamechanges, room: room });
-  }
-
-  //--Choose Team
-  //Toggles the Team and informs other Clients
-  function toggleTeam() {
-    if (team == "X") {
-      team = "O";
-      console.log(socketPrefix + "Switching to Team O");
-      socket.emit("switch_team", { team: "O", room: room });
-      document.getElementById("team-toggle").firstChild.data = "O Team";
-    } else {
-      team = "X";
-      console.log(socketPrefix + "Switching to team X");
-      socket.emit("switch_team", { team: "X", room: room });
-      document.getElementById("team-toggle").firstChild.data = "X Team";
-    }
-  }
-  socket.on("switch_team", function (data) {
-    console.log(
-      socketPrefix +
-        "'" +
-        names[data.user] +
-        "' is now in Team '" +
-        data.team +
-        "'"
-    );
-    teamMembers[data.user] = data.team;
-  });
-
   // Makes tiles on the gameboard clickable
   tiles = document.getElementsByClassName("tile");
 
@@ -271,16 +167,18 @@ document.addEventListener("DOMContentLoaded", function () {
   function tileClicked(e) {
     cl = e.target.classList;
     if (cl.contains("empty")) {
-      if (team == "X") {
+      if (player.team == "X") {
         cl.remove("empty");
         cl.add("cross");
       }
-      if (team == "O") {
+      if (player.team == "O") {
         cl.remove("empty");
         cl.add("circle");
       }
     }
   }
+
+  //--Share
   let shareButton = document.getElementById("share-button");
   shareButton.addEventListener("click", shareClicked);
 
