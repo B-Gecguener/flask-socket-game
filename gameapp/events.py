@@ -59,6 +59,12 @@ class Room:
     def bothReady(self):
        return (self.player1.getReady() and self.player2.getReady())
           
+    def getPlayer(self, i):
+      if i == 1:
+        return self.player1
+       
+      if i == 2:
+        return self.player2
        
 
     def getOpponentName(self, wrongSid):
@@ -68,7 +74,8 @@ class Room:
        elif self.player2 != None: 
           if self.player2.getSid() != wrongSid:
             return {"user-sid": self.player2.getSid(), "name": self.player1.getName()}
-
+       return False
+      
     def getTurn(self):
         return self.turn
     
@@ -152,13 +159,26 @@ def connect_client_to_room(data):
 def addAndConnectPlayer(data):
   # Handles connection of a Client
   team = rooms[data["room"]].getUnusedTeam()
-  rooms[data["room"]].addPlayer(Player(data["name"], request.sid, team))
+  room = rooms[data["room"]]
+  if room.player1 == None:
+    room.player1 = Player(data["name"], request.sid, team)
+    me = room.player1
+  else:
+    room.player2 = Player(data["name"], request.sid, team)
+    me = room.player2
+  # me = data["room"]].player1.name
+
+  print(me.name)
+
+
+  # rooms[data["room"]].addPlayer(Player(data["name"], request.sid, team))
+
   # ^ add client to room
   join_room(data["room"], sid = request.sid)
   # ^ move client into room
   print(prefix+"successfully conneced client '"+request.sid+"' to room '"+data["room"]+"'")
-  io.emit("name", {"user-sid": request.sid, "name": data["name"]}, to=data["room"])
-  io.emit("name", rooms[data["room"]].getOpponentName(request.sid) ,to=request.sid)
+  io.emit("initialize_player", {"user-sid": request.sid, "name": data["name"], "team": team}, to=data["room"])
+  io.emit("initialize_player", rooms[data["room"]].getOpponentName(request.sid) ,to=request.sid)
   io.emit("connected_to_room", to=request.sid)
   # ^ inform client about connection
 
