@@ -59,9 +59,16 @@ def addAndConnectPlayer(data):
   # ^ move client into room
   print(prefix+"successfully connected client '"+request.sid+"' to room '"+data["room"]+"'")
   outgoing = None
+
+  if current_user.is_authenticated:
+    io.emit("wins_and_loses", {"wins": current_user.wins, "loses": current_user.loses}, to=request.sid)
+    
   if opponent != None:
-     outgoing = {"player": {"sid": player.sid, "name": player.name, "team": player.team}, "opponent": {"sid": opponent.sid, "name": opponent.name, "team": opponent.team}}
+     
+     outgoing = {"player": {"sid": player.sid, "name": player.name, "team": player.team}, 
+                 "opponent": {"sid": opponent.sid, "name": opponent.name, "team": opponent.team}}
      io.emit("initialize_player", outgoing, to=player.sid)
+
      outgoing = {"opponent": {"sid": player.sid, "name": player.name, "team": player.team}}
      io.emit("initialize_player", outgoing, to=opponent.sid)
   else:
@@ -151,6 +158,7 @@ def handle_db_update(win):
       current_user.loses += 1
     db.session.commit()
     print("[DataBase]: "+current_user.username+"'s wins: "+str(current_user.wins)+" loses: "+str(current_user.loses))
+    io.emit("wins_and_loses", {"wins": current_user.wins, "loses": current_user.loses}, to=request.sid)
 
 # CHAT
 # --------------------------------------------------------------------------------------------    

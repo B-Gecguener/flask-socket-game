@@ -267,6 +267,7 @@ document.addEventListener("DOMContentLoaded", function () {
       showEndScreen(winner);
     }, 2500);
   });
+
   function showEndScreen(winner) {
     if (winner == player.team) {
       socket.emit("update_db", true);
@@ -296,6 +297,14 @@ document.addEventListener("DOMContentLoaded", function () {
     readyButtonElem.classList.remove("hidden");
     gameBoardElem.classList.add("hidden");
   }
+
+  socket.on("wins_and_loses", function (data) {
+    if (isAuthenticated) {
+      userStatsWinsElem.innerText = "Wins: " + data.wins;
+      userStatsLosesElem.innerText = "Loses: " + data.loses;
+    }
+  });
+
   //--Share
   let shareButton = document.getElementById("share-button");
   shareButton.addEventListener("click", shareClicked);
