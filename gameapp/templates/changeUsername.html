@@ -10,31 +10,21 @@
   var username = "{{username}}";
 </script>
 <div class="welcome round-box">
-  <h1>Hello!</h1>
-  <p>
-    Wanna play Tic Tac Toe? <br />
-    Join a lobby or create one and share it with friends.
-  </p>
+  
+  
   <form action="/" method="post">
     <div class="text-input-container">
-      <label for="name-input">Username</label>
-      <input type="text" id="name-input" name="name" required minlength="1" maxlength="16" />
+      <label for="name-input">New Username</label>
+      <input type="text" id="name-input" name="username" required minlength="1" maxlength="16" />
     </div>
-    <div class="text-input-container">
-      <label for="room-input">Room</label>
-      <input type="text" id="room-input" name="room" maxlength="16" />
-    </div>
+    
     <!-- <button id="join-btn" class="filled">Join</button>
         <button id="create-btn" class="outline">Create</button> -->
-    <input class="filled" type="submit" name="join" value="Play" />
+    <input class="filled" type="submit" name="join" value="Enter" />
     <!-- <input class="outline" type="submit" name="create" value="Create" /> -->
   </form>
-  {% if current_user and current_user.is_authenticated %}
-  <small>You are logged in as {{username}}! <br> <a href="logout">Log out</a> or <a href="changeUsername">change Username</a></small>
-  {% else %}
-  <small>Want to keep your name? <a href="login">Log in</a> or <a href="register">Register</a></small>
+  
 
-  {% endif %}
 </div>
 <div id="bg-container">
   <div class="bg">

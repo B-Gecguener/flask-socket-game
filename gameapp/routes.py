@@ -1,5 +1,5 @@
 from flask import render_template, request, redirect, url_for
-from gameapp import app
+from gameapp import app, db
 import string, random
 from flask_security import current_user
 
@@ -7,6 +7,8 @@ from flask_security import current_user
 def index():
     if request.method == 'POST':
         name = request.form['name']
+        current_user.username = name
+        db.session.commit()
         room = request.form['room']
 
         if room == "" or room == None:
@@ -21,6 +23,10 @@ def index():
         else:
             return render_template("index.html", username = "")
     
+@app.route("/changeUsername")
+def changeUsername():
+    return render_template("changeUsername.html")
+
 @app.route("/game/<lobbyID>")
 def index_with_lobby(lobbyID):
     return render_template("index.html", room = lobbyID)
