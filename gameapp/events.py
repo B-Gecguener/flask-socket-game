@@ -63,10 +63,11 @@ def addAndConnectPlayer(data):
   else:
      outgoing = {"player": {"sid": player.sid, "name": player.name, "team": player.team}}
      io.emit("initialize_player", outgoing, to=player.sid)
-
-  # io.emit("initialize_player", {"user-sid": request.sid, "name": data["name"], "team": team}, to=data["room"])
-  # io.emit("initialize_player", rooms[data["room"]].getOpponentName(request.sid) ,to=request.sid)
   # ^ inform client about connection
+     
+  io.on("disconnect")
+  def handle_disconnect():
+    pass
 
 # PREGAME FUNCTIONS
 # --------------------------------------------------------------------------------------------
@@ -76,11 +77,12 @@ def set_player_ready(data):
   sid = data["sid"]
   roomObj = rooms[room]
 
-  if roomObj.playerX.sid == sid:
-    roomObj.playerX.ready = True
-
-  if roomObj.playerO.sid == sid:
-    roomObj.playerO.ready = True
+  if roomObj.playerX != None:
+    if roomObj.playerX.sid == sid:
+      roomObj.playerX.ready = True
+    elif roomObj.playerO != None:
+      if roomObj.playerO.sid == sid:
+        roomObj.playerO.ready = True
 
   if roomObj.checkBothReady():
      if roomObj.lastTurn == "X":
