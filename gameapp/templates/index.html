@@ -17,7 +17,7 @@
   </p>
   <form action="/" method="post">
     <div class="text-input-container">
-      <label for="name-input">Nickname</label>
+      <label for="name-input">Username</label>
       <input type="text" id="name-input" name="name" required minlength="1" maxlength="16" />
     </div>
     <div class="text-input-container">
@@ -30,7 +30,7 @@
     <!-- <input class="outline" type="submit" name="create" value="Create" /> -->
   </form>
   {% if current_user and current_user.is_authenticated %}
-  <small>You are logged in as {{username}}! <a href="logout">Log out</a></small>
+  <small>You are logged in as {{username}}! <br> <a href="logout">Log out</a> or <a href="change Username">change Username</a></small>
   {% else %}
   <small>Want to keep your name? <a href="login">Log in</a> or <a href="register">Register</a></small>
 

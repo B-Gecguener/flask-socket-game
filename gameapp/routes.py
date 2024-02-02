@@ -15,7 +15,7 @@ def index():
         # return redirect('/game/{room}')
         return redirect(url_for('game', lobbyID = room, name = name))
     else:
-        if current_user.is_authenticated:
+        if current_user.is_authenticated and current_user.username!=None:
             username = current_user.username
             return render_template("index.html", username = username)
         else:
@@ -27,7 +27,16 @@ def index_with_lobby(lobbyID):
 
 @app.route("/game/<lobbyID>/<name>")
 def game(lobbyID, name):
-    return render_template("game.html", room = lobbyID, name = name)
+    if current_user.is_authenticated:
+        return render_template("game.html", 
+                                room = lobbyID, 
+                                name = name, 
+                                userId = current_user.id)
+    else: 
+        return render_template("game.html", 
+                                room = lobbyID, 
+                                name = name, 
+                                userId = "")
 
 def createLobbyLink():
     characters = string.ascii_letters + string.digits
