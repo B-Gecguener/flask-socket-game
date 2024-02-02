@@ -9,7 +9,11 @@ class Role(db.Model, fsqla.FsRoleMixin):
     pass
 
 class User(db.Model, fsqla.FsUserMixin):
-    pass
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(255), unique=True, nullable=True)
+    wins = db.Column(db.Integer, default=0)
+    loses = db.Column(db.Integer, default=0)
+    
 
 admin.add_view(ModelView(User, db.session))
 admin.add_view(ModelView(Role, db.session))
