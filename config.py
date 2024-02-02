@@ -7,6 +7,7 @@ SQLALCHEMY_DATABASE_URI = 'sqlite:///database.sqlite'
 SECURITY_PASSWORD_SALT = '83490012044624960290587214006001089620'
 SECURITY_REGISTERABLE = True
 SECURITY_SEND_REGISTER_EMAIL = False
+SECURITY_USERNAME_ENABLE = True
 
 # Eigentlich sollte config nicht bei git hochgeladen werden weil hier
 # die security keys drin sind

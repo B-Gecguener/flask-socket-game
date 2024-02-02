@@ -4,6 +4,8 @@ class Player:
         self.name = name
         self.team = team
         self.ready = False
+        self.wins = 0
+        self.loses = 0
 
 class Room:
     def __init__(self):
