@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", function () {
   if (username != "") {
     let nameInput = document.getElementById("name-input");
     nameInput.value = username;
-    nameInput.readOnly = true;
+    // nameInput.readOnly = true;
   }
 
   //This creates a Sting out of ascii Chars and Nubers

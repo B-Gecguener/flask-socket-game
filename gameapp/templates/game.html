@@ -1,17 +1,29 @@
 {% extends 'base.html' %} {% block title %}Tic Tac Toe{% endblock %} {% block
 imports %}
 <script src="https://cdn.socket.io/4.1.2/socket.io.min.js"></script>
-<link
-  rel="stylesheet"
-  type="text/css"
-  href="{{ url_for('static', filename='css/game.css') }}"
-/>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/game.css') }}" />
 {% endblock %} {% block content %}
 <script>
   var room = "{{room}}";
   var name = "{{name}}";
+  var isAuthenticated;
+  if ("{{isAuthenticated}}" == "true") {
+    isAuthenticated = true;
+
+  } else if ("{{isAuthenticated}}" == "false") {
+    isAuthenticated = false;
+
+  }
+
 </script>
 <script src="/static/gamePageScript.js"></script>
+{% if current_user and current_user.is_authenticated %}
+<div id="user-stats" class="round-box">
+  <h3 class="user-name"> Empty </h3>
+  <p class="user-wins">Wins: 0</p>
+  <p class="user-loses">Loses: 0</p>
+</div>
+{% endif %}
 <main>
   <div class="game-container round-box">
     <div id="game-board" class="hidden">

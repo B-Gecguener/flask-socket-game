@@ -2,6 +2,8 @@ from flask import request
 from flask_socketio import SocketIO, emit, join_room
 from .classes import Player, Room
 io = SocketIO()
+from flask_security import current_user
+
 
 prefix = "[io-Server]: "
 
@@ -36,6 +38,9 @@ def connect_client_to_room(data):
     
 
 def addAndConnectPlayer(data):
+  if current_user.is_authenticated and current_user.username!=None:
+    print(current_user.username)
+
   # Handles connection of a Client
   room = data["room"]
   roomObj = rooms[data["room"]]
