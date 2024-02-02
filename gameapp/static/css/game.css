@@ -5,6 +5,16 @@
     min-width: 0;
   }
 }
+#user-stats {
+  position: absolute;
+  height: 64px;
+  display: flex;
+  gap: 12px;
+  top: 32px;
+  right: 32px;
+  align-items: center;
+  justify-content: center;
+}
 .game-container {
   flex-grow: 1;
   padding: 32px;

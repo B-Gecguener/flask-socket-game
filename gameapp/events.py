@@ -37,6 +37,9 @@ def connect_client_to_room(data):
     
 
 def addAndConnectPlayer(data):
+  if current_user.is_authenticated and current_user.username!=None:
+    print(current_user.username)
+
   # Handles connection of a Client
   room = data["room"]
   roomObj = rooms[data["room"]]

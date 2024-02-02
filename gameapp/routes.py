@@ -23,9 +23,6 @@ def index():
         else:
             return render_template("index.html", username = "")
     
-@app.route("/changeUsername")
-def changeUsername():
-    return render_template("changeUsername.html")
 
 @app.route("/game/<lobbyID>")
 def index_with_lobby(lobbyID):
@@ -37,12 +34,12 @@ def game(lobbyID, name):
         return render_template("game.html", 
                                 room = lobbyID, 
                                 name = name, 
-                                userId = current_user.id)
+                                isAuthenticated = "true")
     else: 
         return render_template("game.html", 
                                 room = lobbyID, 
                                 name = name, 
-                                userId = "")
+                                isAuthenticated = "false")
 
 def createLobbyLink():
     characters = string.ascii_letters + string.digits

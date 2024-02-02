@@ -11,6 +11,7 @@ let grid = ["", "", "", "", "", "", "", "", ""];
 let tileElems = [];
 let player = null;
 let opponent = null;
+let userIsAuthenticated = false;
 //--On-Load Wrapper
 document.addEventListener("DOMContentLoaded", function () {
   //This wrapper-function ensures, that the websocket connects after the whole document was loaded
@@ -43,6 +44,20 @@ document.addEventListener("DOMContentLoaded", function () {
   let gameTextElem = document.getElementById("game-text");
 
   let turnOverlayElem = document.getElementById("turn-overlay");
+  let userStatsElem;
+  let userStatsNameElem;
+  let userStatsWinsElem;
+  let userStatsLosesElem;
+
+  console.log("auth = " + isAuthenticated);
+  if (isAuthenticated == true) {
+    userStatsElem = document.getElementById("user-stats");
+    userStatsNameElem = userStatsElem.children[0];
+    userStatsWinsElem = userStatsElem.children[1];
+    userStatsLosesElem = userStatsElem.children[2];
+  } else {
+    console.log("is not auth");
+  }
 
   readyButtonElem.addEventListener("click", readyUp);
   messageElem.addEventListener("keyup", function (event) {
@@ -83,11 +98,15 @@ document.addEventListener("DOMContentLoaded", function () {
         namePlayerElem.classList.add("red");
         nameOpponentElem.classList.add("green");
       }
+      if (isAuthenticated) {
+        userStatsNameElem.innerText = player.name;
+      }
     }
     displayNames();
   });
   function displayNames() {
     namePlayerElem.innerText = player.name;
+
     if (opponent != null) {
       statsOpponentElem.classList.remove("hidden");
       nameOpponentElem.innerText = opponent.name;
