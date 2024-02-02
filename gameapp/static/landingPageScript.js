@@ -12,6 +12,11 @@ document.addEventListener("DOMContentLoaded", function () {
     roomInput.value = room;
     roomInput.readOnly = true;
   }
+  if (username != "") {
+    let nameInput = document.getElementById("name-input");
+    nameInput.value = username;
+    nameInput.readOnly = true;
+  }
 
   //This creates a Sting out of ascii Chars and Nubers
   function generateRandomString() {

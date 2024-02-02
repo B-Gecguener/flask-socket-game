@@ -7,6 +7,7 @@
 {% block content %}
 <script>
   var room = "{{room}}";
+  var username = "{{username}}";
 </script>
 <div class="welcome round-box">
   <h1>Hello!</h1>
@@ -25,10 +26,15 @@
     </div>
     <!-- <button id="join-btn" class="filled">Join</button>
         <button id="create-btn" class="outline">Create</button> -->
-    <input class="filled" type="submit" name="join" value="Join" />
-    <input class="outline" type="submit" name="create" value="Create" />
+    <input class="filled" type="submit" name="join" value="Play" />
+    <!-- <input class="outline" type="submit" name="create" value="Create" /> -->
   </form>
+  {% if current_user and current_user.is_authenticated %}
+  <small>You are logged in as {{username}}! <a href="logout">Log out</a></small>
+  {% else %}
   <small>Want to keep your name? <a href="login">Log in</a> or <a href="register">Register</a></small>
+
+  {% endif %}
 </div>
 <div id="bg-container">
   <div class="bg">
