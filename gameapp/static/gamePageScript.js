@@ -80,6 +80,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
   socket.on("lobby_full", function () {
     console.log(socketPrefix + "room is full");
+    alert("Room is full. Please create another one.");
+    window.location = "/";
   });
 
   socket.on("initialize_player", function (data) {
