@@ -1,7 +1,7 @@
 from flask import render_template, request, redirect, url_for
 from gameapp import app
 import string, random
-
+from flask_security import current_user
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -15,8 +15,12 @@ def index():
         # return redirect('/game/{room}')
         return redirect(url_for('game', lobbyID = room, name = name))
     else:
-        return render_template("index.html")
-
+        if current_user.is_authenticated:
+            username = current_user.username
+            return render_template("index.html", username = username)
+        else:
+            return render_template("index.html", username = "")
+    
 @app.route("/game/<lobbyID>")
 def index_with_lobby(lobbyID):
     return render_template("index.html", room = lobbyID)
