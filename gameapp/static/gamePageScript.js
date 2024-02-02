@@ -76,6 +76,13 @@ document.addEventListener("DOMContentLoaded", function () {
     if ("player" in data) {
       player = data.player;
       console.log(socketPrefix + "I'm: " + player.name);
+      if (player.team == "X") {
+        namePlayerElem.classList.add("green");
+        nameOpponentElem.classList.add("red");
+      } else {
+        namePlayerElem.classList.add("red");
+        nameOpponentElem.classList.add("green");
+      }
     }
     displayNames();
   });

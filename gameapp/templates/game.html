@@ -1,11 +1,12 @@
-{% extends 'base.html' %} {% block title %}Tic Tac Toe{% endblock %}
-
-{% block imports %}
+{% extends 'base.html' %} {% block title %}Tic Tac Toe{% endblock %} {% block
+imports %}
 <script src="https://cdn.socket.io/4.1.2/socket.io.min.js"></script>
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/game.css') }}" />
-{% endblock %}
-
-{% block content %}
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="{{ url_for('static', filename='css/game.css') }}"
+/>
+{% endblock %} {% block content %}
 <script>
   var room = "{{room}}";
   var name = "{{name}}";
@@ -33,9 +34,7 @@
         <div class="tile empty" id="tile-09"></div>
       </div>
     </div>
-    <h1 id="game-text" class="">
-      Are you ready?
-    </h1>
+    <h1 id="game-text" class="">Are you ready?</h1>
     <button id="ready-button" class="filled">Ready!</button>
   </div>
   <div class="side">
@@ -46,21 +45,19 @@
           <h2>{{room}}</h2>
         </div>
         <div id="share-button">
-          <div class="share-icon">
-
-          </div>
+          <div class="share-icon"></div>
           <!-- <img src="/static/img/copy-icon.png" alt="copy-icon"> -->
         </div>
       </div>
       <div class="players">
         <div class="player-column" id="stats-player">
           <small class="turn-indicator">You:</small>
-          <p class="red">Empty</p>
+          <p class="">Empty</p>
           <h1>0</h1>
         </div>
         <div class="player-column" id="stats-opponent">
           <small>Opponent:</small>
-          <p class="green">Empty</p>
+          <p class="">Empty</p>
           <h1>0</h1>
         </div>
       </div>
@@ -69,12 +66,10 @@
       <div class="gradient" id="grd-top"></div>
       <div class="gradient hidden" id="grd-bottom"></div>
       <input type="text" id="message" placeholder="Message..." />
-      <div id="messages">
-      </div>
+      <div id="messages"></div>
     </div>
   </div>
 </main>
 
-<div id="bg-container">
-</div>
+<div id="bg-container"></div>
 {% endblock %}

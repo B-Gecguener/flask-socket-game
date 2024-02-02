@@ -132,6 +132,7 @@
   height: 32px;
   background-color: white;
   flex-shrink: 0;
+  cursor: pointer;
 }
 #share-button .share-icon {
   width: 100%;

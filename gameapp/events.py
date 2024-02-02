@@ -1,7 +1,6 @@
 from flask import request
 from flask_socketio import SocketIO, emit, join_room
 from .classes import Player, Room
-import random
 io = SocketIO()
 
 prefix = "[io-Server]: "
@@ -84,10 +83,12 @@ def set_player_ready(data):
     roomObj.playerO.ready = True
 
   if roomObj.checkBothReady():
-     if bool(random.getrandbits(1)):
+     if roomObj.lastTurn == "X":
+        roomObj.turn = "O"
+        
+     if roomObj.lastTurn == "O":
         roomObj.turn = "X"
-     else:
-         roomObj.turn = "O"
+     roomObj.lastTurn = roomObj.turn
 
      io.emit("start_game", roomObj.turn, to=room)
 # GAME UPDATES AND SIGNALS
@@ -119,11 +120,19 @@ def handle_game_move(data):
       roomObj.switchTurn()
       io.emit("game_update", {"grid": grid}, to=recipient)
     else:
+      winner = roomObj.checkWinCondition()
       print(prefix+"Game ended in room '"+room+"'")
       roomObj.playerO.ready = False
       roomObj.playerX.ready = False
 
-      io.emit("win_update", {"grid": grid, "winner": roomObj.checkWinCondition()}, to=room)
+      if (winner == "X"):
+        roomObj.playerX.wins += 1
+        roomObj.playerO.loses += 1
+      else:
+        roomObj.playerX.loses += 1
+        roomObj.playerO.wins += 1
+
+      io.emit("win_update", {"grid": grid, "winner": winner}, to=room)
       roomObj.turn = None
        
 

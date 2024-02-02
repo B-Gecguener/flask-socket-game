@@ -1,3 +1,5 @@
+import random
+
 class Player:
     def __init__(self, name, sid, team):
         self.sid = sid
@@ -10,9 +12,14 @@ class Player:
 class Room:
     def __init__(self):
         self.turn = None
+        self.lastTurn = None
         self.grid = ["", "", "", "", "", "", "", "", ""]
         self.playerX = None
         self.playerO = None
+        if bool(random.getrandbits(1)):
+            self.lastTurn = "O"
+        else:
+            self.lastTurn = "X"
     
     def checkBothReady(self):
        return (self.playerX.ready and self.playerO.ready)
