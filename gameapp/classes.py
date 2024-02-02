@@ -31,15 +31,12 @@ class Room:
         while i < 9: 
             if self.grid[i] == self.grid[i+1] == self.grid[i+2]:
                 if self.grid[i] != "":
-                    print("Won in horizontal line: " + str(i))
                     return self.grid[i]
             i += 3
         i = 0
         while i < 3:
             if self.grid[i] == self.grid[i+3] == self.grid[i+6]:
                 if self.grid[i] != "":
-                    print("Won in vertical line: " + str(i))
-                    
                     return self.grid[i]
             i += 1
             

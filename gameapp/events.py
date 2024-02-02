@@ -1,70 +1,12 @@
 from flask import request
 from flask_socketio import SocketIO, emit, join_room
+from .classes import Player, Room
 import random
 io = SocketIO()
 
 prefix = "[io-Server]: "
 
 rooms = {}
-
-class Player:
-    def __init__(self, name, sid, team):
-        self.sid = sid
-        self.name = name
-        self.team = team
-        self.ready = False
-
-class Room:
-    def __init__(self):
-        self.turn = None
-        self.grid = ["", "", "", "", "", "", "", "", ""]
-        self.playerX = None
-        self.playerO = None
-    
-    def checkBothReady(self):
-       return (self.playerX.ready and self.playerO.ready)
-          
-       
-    def switchTurn(self):
-        if self.turn == "X": self.turn = "O"
-        elif self.turn == "O": self.turn = "X"
-  
-    def updateGrid(self,updatePos,teamSymbol):
-        self.grid[updatePos] = teamSymbol
-    
-    def resetGrid(self):
-        self.grid = ["", "", "", "", "", "", "", "", ""]
-    
-    def checkWinCondition(self):
-        i = 0
-        while i < 9: 
-            if self.grid[i] == self.grid[i+1] == self.grid[i+2]:
-                if self.grid[i] != "":
-                    print("Won in horizontal line: " + str(i))
-                    return self.grid[i]
-            i += 3
-        i = 0
-        while i < 3:
-            if self.grid[i] == self.grid[i+3] == self.grid[i+6]:
-                if self.grid[i] != "":
-                    print("Won in vertical line: " + str(i))
-                    
-                    return self.grid[i]
-            i += 1
-            
-        if self.grid[0] == self.grid[4] and self.grid[4] == self.grid[8]:
-            if self.grid[0] != "":
-                return self.grid[0]
-        if self.grid[2] == self.grid[4] and self.grid[4] == self.grid[6]:
-            if self.grid[2] != "":
-                return self.grid[2]
-        i = 0
-        while i < 9:
-            if self.grid[i] == "":
-                return None
-            i += 1
-        return "tie"
-
 
 # This is the server-sided code for socket.io (server is 'io', client is 'socket')
 # The following lines are the events that will be catched and answerd by the server
@@ -153,14 +95,14 @@ def set_player_ready(data):
 
 @io.on("game_move")
 def handle_game_move(data):
-  print("game move recieved")
   room =data["room"]
   roomObj = rooms[room]
   grid = data["grid"]
   team = data["team"]
+  print(prefix+"Game move recieved in room '"+room+"'")
+
   # Handle incoming game move
   if (roomObj.turn == team):
-    print("it's the teams turn")
 
     # ^ make sure move is submitted by turntaking client
     roomObj.grid = grid
@@ -168,7 +110,6 @@ def handle_game_move(data):
 
     # if nobody winns, the checkWinCondition function returns None
     if roomObj.checkWinCondition() == None:
-      print("game is not won yet")
 
       if team == "X":
         recipient = roomObj.playerO.sid
@@ -178,7 +119,7 @@ def handle_game_move(data):
       roomObj.switchTurn()
       io.emit("game_update", {"grid": grid}, to=recipient)
     else:
-      print("game is won")
+      print(prefix+"Game ended in room '"+room+"'")
       roomObj.playerO.ready = False
       roomObj.playerX.ready = False
 
