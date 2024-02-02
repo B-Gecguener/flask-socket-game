@@ -1,7 +1,8 @@
 from flask import request
-from flask_socketio import SocketIO, emit, join_room
+from flask_socketio import SocketIO, join_room
 from .classes import Player, Room
-io = SocketIO()
+from flask_security import current_user
+from gameapp import db, io
 
 prefix = "[io-Server]: "
 
@@ -93,6 +94,7 @@ def set_player_ready(data):
      roomObj.lastTurn = roomObj.turn
 
      io.emit("start_game", roomObj.turn, to=room)
+
 # GAME UPDATES AND SIGNALS
 # --------------------------------------------------------------------------------------------  
 
@@ -136,8 +138,16 @@ def handle_game_move(data):
 
       io.emit("win_update", {"grid": grid, "winner": winner}, to=room)
       roomObj.turn = None
-       
 
+@io.on("update_db")
+def handle_db_update(win):
+  if current_user.is_authenticated:
+    if win:
+      current_user.wins += 1
+    else:
+      current_user.loses += 1
+    db.session.commit()
+    print("[DataBase]: "+current_user.username+"'s wins: "+str(current_user.wins)+" loses: "+str(current_user.loses))
 
 # CHAT
 # --------------------------------------------------------------------------------------------    

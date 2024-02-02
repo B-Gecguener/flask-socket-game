@@ -230,8 +230,6 @@ document.addEventListener("DOMContentLoaded", function () {
   socket.on("win_update", function (data) {
     grid = data.grid;
     winner = data.winner;
-    console.log("winner:" + winner);
-    console.log("team:" + player.team);
 
     for (let i = 0; i < tileElems.length; i++) {
       if (grid[i] == "X") {
@@ -252,12 +250,14 @@ document.addEventListener("DOMContentLoaded", function () {
   });
   function showEndScreen(winner) {
     if (winner == player.team) {
+      socket.emit("update_db", true);
       gameTextElem.innerHTML = "You won! </br> Wanna play again?";
       playerScore++;
       scorePlayerElem.innerText = playerScore;
     } else if (winner == "tie") {
       gameTextElem.innerHTML = "It's a tie! </br> Wanna play again?";
     } else {
+      socket.emit("update_db", false);
       gameTextElem.innerHTML = "You lost! </br> Wanna play again?";
       opponentScore++;
       scoreOpponentElem.innerText = opponentScore;
