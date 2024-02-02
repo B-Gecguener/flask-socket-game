@@ -23,9 +23,6 @@ def index():
         else:
             return render_template("index.html", username = "")
     
-@app.route("/changeUsername")
-def changeUsername():
-    return render_template("changeUsername.html")
 
 @app.route("/game/<lobbyID>")
 def index_with_lobby(lobbyID):

@@ -10,7 +10,7 @@ class Role(db.Model, fsqla.FsRoleMixin):
 
 class User(db.Model, fsqla.FsUserMixin):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(255), unique=True, nullable=True)
+    username = db.Column(db.String(255), unique=False, nullable=True)
     wins = db.Column(db.Integer, default=0)
     loses = db.Column(db.Integer, default=0)
     
