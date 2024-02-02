@@ -4,6 +4,8 @@ let socketPrefix = "[socket]: ";
 //Ready Boolean
 //TurnBoolean, if true, its clients turn
 let isMyTurn = false;
+let playerScore = 0;
+let opponentScore = 0;
 let grid = ["", "", "", "", "", "", "", "", ""];
 //Name List
 let tileElems = [];
@@ -173,31 +175,33 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function tileClicked(e) {
     console.log("clicked" + isMyTurn);
-    if (isMyTurn) {
+    cl = e.target.classList;
+    if (isMyTurn && cl.contains("empty")) {
+      isMyTurn = false;
       console.log("clicked and its my turn");
 
-      cl = e.target.classList;
       let index = tileElems.indexOf(e.target);
 
-      if (cl.contains("empty")) {
-        if (player.team == "X") {
-          cl.remove("empty");
-          cl.add("cross");
-          grid[index] = "X";
-        }
-        if (player.team == "O") {
-          cl.remove("empty");
-          cl.add("circle");
-          grid[index] = "O";
-        }
+      if (player.team == "X") {
+        cl.remove("empty");
+        cl.add("cross");
+        grid[index] = "X";
+      }
+      if (player.team == "O") {
+        cl.remove("empty");
+        cl.add("circle");
+        grid[index] = "O";
       }
       socket.emit("game_move", {
         grid: grid,
         team: player.team,
         room: room,
       });
-      isMyTurn = false;
-      turnOverlayElem.classList.remove("hidden");
+      setTimeout(() => {
+        if (!isMyTurn) {
+          turnOverlayElem.classList.remove("hidden");
+        }
+      }, 1000);
     }
   }
 
@@ -219,13 +223,8 @@ document.addEventListener("DOMContentLoaded", function () {
   socket.on("win_update", function (data) {
     grid = data.grid;
     winner = data.winner;
-    let hasWon = false;
     console.log("winner:" + winner);
     console.log("team:" + player.team);
-
-    if (winner == player.team) {
-      hasWon = true;
-    }
 
     for (let i = 0; i < tileElems.length; i++) {
       if (grid[i] == "X") {
@@ -241,14 +240,20 @@ document.addEventListener("DOMContentLoaded", function () {
     turnOverlayElem.classList.add("hidden");
     console.log("game over");
     setTimeout(() => {
-      showEndScreen(hasWon);
+      showEndScreen(winner);
     }, 2500);
   });
-  function showEndScreen(hasWon) {
-    if (hasWon) {
-      gameTextElem.innerText = "You won! Wanna play again?";
+  function showEndScreen(winner) {
+    if (winner == player.team) {
+      gameTextElem.innerHTML = "You won! </br> Wanna play again?";
+      playerScore++;
+      scorePlayerElem.innerText = playerScore;
+    } else if (winner == "tie") {
+      gameTextElem.innerHTML = "It's a tie! </br> Wanna play again?";
     } else {
-      gameTextElem.innerText = "You lost! Wanna play again?";
+      gameTextElem.innerHTML = "You lost! </br> Wanna play again?";
+      opponentScore++;
+      scoreOpponentElem.innerText = opponentScore;
     }
     grid = ["", "", "", "", "", "", "", "", ""];
     for (let i = 0; i < tileElems.length; i++) {

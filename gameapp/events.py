@@ -50,7 +50,7 @@ class Room:
                     print("Won in vertical line: " + str(i))
                     
                     return self.grid[i]
-            i+= 1
+            i += 1
             
         if self.grid[0] == self.grid[4] and self.grid[4] == self.grid[8]:
             if self.grid[0] != "":
@@ -58,7 +58,12 @@ class Room:
         if self.grid[2] == self.grid[4] and self.grid[4] == self.grid[6]:
             if self.grid[2] != "":
                 return self.grid[2]
-        return None
+        i = 0
+        while i < 9:
+            if self.grid[i] == "":
+                return None
+            i += 1
+        return "tie"
 
 
 # This is the server-sided code for socket.io (server is 'io', client is 'socket')
