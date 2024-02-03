@@ -37,9 +37,6 @@ def connect_client_to_room(data):
     
 
 def addAndConnectPlayer(data):
-  if current_user.is_authenticated and current_user.username!=None:
-    print(current_user.username)
-
   # Handles connection of a Client
   room = data["room"]
   roomObj = rooms[data["room"]]
@@ -47,6 +44,8 @@ def addAndConnectPlayer(data):
   if roomObj.playerX == None:
     roomObj.playerX = Player(data["name"], request.sid, "X")
     player = roomObj.playerX
+    if roomObj.playerO != None:
+      opponent = roomObj.playerO
     # if roomObj.playerO != None:
     #   opponent = roomObj.playerO
   else:
@@ -62,7 +61,7 @@ def addAndConnectPlayer(data):
 
   if current_user.is_authenticated:
     io.emit("wins_and_loses", {"wins": current_user.wins, "loses": current_user.loses}, to=request.sid)
-    
+
   if opponent != None:
      
      outgoing = {"player": {"sid": player.sid, "name": player.name, "team": player.team}, 
@@ -76,9 +75,24 @@ def addAndConnectPlayer(data):
      io.emit("initialize_player", outgoing, to=player.sid)
   # ^ inform client about connection
      
-  io.on("disconnect")
-  def handle_disconnect():
-    pass
+@io.on("disconnect")
+def handle_disconnect():
+    socketsRooms = io.server.rooms(request.sid)
+    for room in socketsRooms:
+      if room != request.sid:
+        
+        if rooms[room].playerO != None:
+          if rooms[room].playerO.sid == request.sid:
+            print(prefix+rooms[room].playerO.name+" disconnected from room '"+room+"'")
+            rooms[room].playerO = None
+            io.emit("player_disconnected", to=room)
+        if rooms[room].playerX != None:
+          if rooms[room].playerX.sid == request.sid:
+            print(prefix+rooms[room].playerX.name+" disconnected from room '"+room+"'")
+            rooms[room].playerX = None
+            io.emit("player_disconnected", to=room)
+        if rooms[room].playerX != None: print(prefix+rooms[room].playerX.name+" remain in room")
+        if rooms[room].playerO != None: print(prefix+rooms[room].playerO.name+" remain in room")
 
 # PREGAME FUNCTIONS
 # --------------------------------------------------------------------------------------------

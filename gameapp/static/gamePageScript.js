@@ -89,16 +89,19 @@ document.addEventListener("DOMContentLoaded", function () {
     if ("opponent" in data) {
       opponent = data.opponent;
       console.log(socketPrefix + "My Opponent is " + opponent.name);
+      if (opponent.team == "O") {
+        nameOpponentElem.classList.add("red");
+      } else {
+        nameOpponentElem.classList.add("green");
+      }
     }
     if ("player" in data) {
       player = data.player;
       console.log(socketPrefix + "I'm: " + player.name);
       if (player.team == "X") {
         namePlayerElem.classList.add("green");
-        nameOpponentElem.classList.add("red");
       } else {
         namePlayerElem.classList.add("red");
-        nameOpponentElem.classList.add("green");
       }
       if (isAuthenticated) {
         userStatsNameElem.innerText = player.name;
@@ -114,6 +117,31 @@ document.addEventListener("DOMContentLoaded", function () {
       nameOpponentElem.innerText = opponent.name;
     }
   }
+
+  socket.on("player_disconnected", function () {
+    console.log(socketPrefix + "Opponent disconnected");
+    nameOpponentElem.innerText = "Empty";
+    nameOpponentElem.classList.remove("red");
+    nameOpponentElem.classList.remove("green");
+    scoreOpponentElem.innerText = "0";
+    opponent = null;
+    opponentScore = 0;
+    //Reset Grid
+    grid = ["", "", "", "", "", "", "", "", ""];
+    for (let i = 0; i < tileElems.length; i++) {
+      tileElems[i].classList.remove("empty");
+      tileElems[i].classList.remove("circle");
+      tileElems[i].classList.remove("cross");
+
+      tileElems[i].classList.add("empty");
+    }
+
+    turnOverlayElem.classList.remove("hidden");
+    gameTextElem.classList.remove("hidden");
+
+    readyButtonElem.classList.remove("hidden");
+    gameBoardElem.classList.add("hidden");
+  });
 
   //--Chat
   function sendChatMessage() {
