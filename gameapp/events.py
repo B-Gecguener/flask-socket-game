@@ -93,6 +93,9 @@ def handle_disconnect():
             io.emit("player_disconnected", to=room)
         if rooms[room].playerX != None: print(prefix+rooms[room].playerX.name+" remain in room")
         if rooms[room].playerO != None: print(prefix+rooms[room].playerO.name+" remain in room")
+        if rooms[room].playerX == None and rooms[room].playerO == None:
+          del rooms[room]
+          
 
 # PREGAME FUNCTIONS
 # --------------------------------------------------------------------------------------------
