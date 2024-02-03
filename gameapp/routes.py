@@ -25,8 +25,13 @@ def index():
     
 
 @app.route("/game/<lobbyID>")
+def redirect_to_index_with_lobby(lobbyID):
+    return redirect("/"+lobbyID)
+
+@app.route("/<lobbyID>")
 def index_with_lobby(lobbyID):
     return render_template("index.html", room = lobbyID)
+    
 
 @app.route("/game/<lobbyID>/<name>")
 def game(lobbyID, name):
